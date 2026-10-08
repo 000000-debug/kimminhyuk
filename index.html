@@ -1,921 +1,474 @@
 <!DOCTYPE html>
-<html lang="ko" class="dark">
+<html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GOLD.GG - 전적 검색 및 e스포츠 뉴스</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
-    
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        navy: {
-                            950: '#050B14',
-                            900: '#0A1128',
-                            850: '#0F1A36',
-                            800: '#142247',
-                            700: '#1E315E',
-                            600: '#2A437C',
-                        },
-                        gold: {
-                            300: '#FFE885',
-                            400: '#FCD34D',
-                            500: '#F59E0B',
-                            600: '#D97706',
-                            metallic: '#D4AF37',
-                            accent: '#FFD700',
-                            glow: 'rgba(255, 215, 0, 0.35)'
-                        }
-                    },
-                    fontFamily: {
-                        sans: ['Noto Sans KR', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
-    
-    <style>
-        body {
-            background-color: #050B14;
-            color: #E2E8F0;
-            font-family: 'Noto Sans KR', sans-serif;
-            background-image: 
-                radial-gradient(circle at 50% 0%, rgba(20, 34, 71, 0.7) 0%, transparent 75%),
-                radial-gradient(circle at 80% 20%, rgba(212, 175, 55, 0.08) 0%, transparent 50%);
-            background-attachment: fixed;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GG.SEARCH - 전적 검색 및 e스포츠 뉴스</title>
+  <style>
+    :root {
+      --bg-dark: #0a0e17;
+      --card-navy: #121c2d;
+      --accent-navy: #1b2a4a;
+      --border-navy: #25375c;
+      --gold-main: #d4af37;
+      --gold-light: #f3e5ab;
+      --gold-glow: rgba(212, 175, 55, 0.3);
+      --text-main: #f0f4f8;
+      --text-muted: #94a3b8;
+      --win-color: #2563eb;
+      --loss-color: #dc2626;
+    }
 
-        /* Gold Metallic Gradient Text */
-        .gold-gradient-text {
-            background: linear-gradient(135deg, #FFF3B0 0%, #FFD700 45%, #D4AF37 80%, #996515 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
 
-        /* Gold Border and Glow effect for Header and Wireframe Spec */
-        .gold-box-frame {
-            border: 2px solid #D4AF37;
-            box-shadow: 0 0 20px rgba(212, 175, 55, 0.25), inset 0 0 15px rgba(212, 175, 55, 0.1);
-            background: linear-gradient(180deg, rgba(20, 34, 71, 0.85) 0%, rgba(10, 17, 40, 0.95) 100%);
-        }
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
 
-        .gold-button {
-            background: linear-gradient(135deg, #D4AF37 0%, #FFD700 50%, #B8860B 100%);
-            color: #050B14;
-            font-weight: 700;
-            transition: all 0.25s ease;
-            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
-        }
-        .gold-button:hover {
-            background: linear-gradient(135deg, #FFD700 0%, #FFF099 50%, #D4AF37 100%);
-            box-shadow: 0 0 25px rgba(255, 215, 0, 0.6);
-            transform: translateY(-2px);
-        }
+    /* 메인 레이아웃 컨테이너 */
+    .container {
+      width: 100%;
+      max-width: 1280px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
 
-        .gold-circle-btn {
-            background: linear-gradient(145deg, #FFD700, #B8860B);
-            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4), 0 0 0 3px rgba(212, 175, 55, 0.3);
-            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-        .gold-circle-btn:hover {
-            transform: scale(1.12) translateY(-4px);
-            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.7), 0 0 0 4px rgba(255, 215, 0, 0.5);
-        }
+    /* 기획서 표 스타일 헤더 정보 */
+    .info-header {
+      background: var(--card-navy);
+      border: 2px solid var(--gold-main);
+      border-radius: 8px;
+      padding: 12px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.95rem;
+    }
+    .info-header span {
+      color: var(--gold-light);
+      font-weight: bold;
+    }
 
-        .navy-card {
-            background: rgba(15, 26, 54, 0.85);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(212, 175, 55, 0.2);
-            border-radius: 0.75rem;
-        }
+    /* 1. 헤더 영역 (통합 검색) */
+    .header-section {
+      background: linear-gradient(135deg, #0d1b2a 0%, #1b263b 100%);
+      border: 3px solid var(--gold-main);
+      border-radius: 12px;
+      padding: 25px;
+      text-align: center;
+      box-shadow: 0 0 15px var(--gold-glow);
+    }
+    .search-title {
+      color: var(--gold-main);
+      font-size: 1.5rem;
+      margin-bottom: 15px;
+      font-weight: 800;
+      letter-spacing: 1px;
+    }
+    .search-box {
+      display: flex;
+      justify-content: center;
+      max-width: 650px;
+      margin: 0 auto;
+      gap: 10px;
+    }
+    .search-input {
+      flex: 1;
+      padding: 14px 20px;
+      border-radius: 8px;
+      border: 2px solid var(--gold-main);
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-size: 1.05rem;
+      outline: none;
+    }
+    .search-input:focus {
+      box-shadow: 0 0 10px var(--gold-main);
+    }
+    .search-btn {
+      padding: 14px 28px;
+      background: linear-gradient(135deg, #d4af37 0%, #aa7c11 100%);
+      border: none;
+      border-radius: 8px;
+      color: #000;
+      font-weight: bold;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .search-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px var(--gold-glow);
+    }
 
-        /* Win / Loss Match Backgrounds */
-        .win-match {
-            background: linear-gradient(90deg, rgba(30, 58, 138, 0.4) 0%, rgba(15, 26, 54, 0.8) 100%);
-            border-left: 5px solid #3B82F6;
-        }
-        .loss-match {
-            background: linear-gradient(90deg, rgba(153, 27, 27, 0.4) 0%, rgba(15, 26, 54, 0.8) 100%);
-            border-left: 5px solid #EF4444;
-        }
+    /* 메인 컨텐츠 영역 (본문 80% + 사이드 20%) */
+    .content-wrapper {
+      display: flex;
+      gap: 20px;
+    }
 
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #0A1128;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #2A437C;
-            border-radius: 4px;
-            border: 1px solid #D4AF37;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #D4AF37;
-        }
-    </style>
+    /* 3. 본문 영역 (너비 약 80%) */
+    .main-content {
+      flex: 4; /* 약 80% 차지 */
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* 4. 관심 영역 (개인화 즐겨찾기 5개 아이콘) */
+    .favorite-section {
+      background-color: var(--card-navy);
+      border: 2px solid var(--border-navy);
+      border-radius: 12px;
+      padding: 20px;
+    }
+    .section-title {
+      font-size: 1.1rem;
+      color: var(--gold-main);
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .favorite-icons {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .fav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .fav-item:hover {
+      transform: scale(1.1);
+    }
+    .fav-circle {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #f5c518 0%, #d4af37 100%);
+      border: 3px solid var(--gold-light);
+      box-shadow: 0 0 10px var(--gold-glow);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.8rem;
+      color: #000;
+      font-weight: bold;
+    }
+    .fav-name {
+      font-size: 0.85rem;
+      color: var(--text-main);
+      font-weight: 600;
+    }
+
+    /* 5. 중앙 하이라이트 배너 (영상/스킨/매드무비) */
+    .highlight-banner {
+      background: linear-gradient(rgba(10, 14, 23, 0.4), rgba(10, 14, 23, 0.8)), url('https://picsum.photos/800/300?games') center/cover;
+      border: 2px solid var(--gold-main);
+      border-radius: 12px;
+      height: 220px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+    .banner-badge {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      background-color: var(--gold-main);
+      color: #000;
+      font-weight: bold;
+      font-size: 0.8rem;
+      padding: 4px 10px;
+      border-radius: 4px;
+    }
+    .banner-title {
+      font-size: 1.5rem;
+      color: #fff;
+      font-weight: bold;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+    }
+    .banner-desc {
+      color: var(--gold-light);
+      font-size: 0.95rem;
+      margin-top: 5px;
+    }
+
+    /* 메인 피드 (1티어 챔피언 & 게임 메타 분석) */
+    .meta-feed {
+      background-color: var(--card-navy);
+      border: 2px solid var(--border-navy);
+      border-radius: 12px;
+      padding: 20px;
+    }
+    .champion-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 15px;
+      margin-top: 15px;
+    }
+    .champ-card {
+      background-color: var(--accent-navy);
+      border: 1px solid var(--border-navy);
+      border-radius: 8px;
+      padding: 12px;
+      text-align: center;
+    }
+    .champ-badge {
+      color: var(--gold-main);
+      font-weight: bold;
+      font-size: 0.8rem;
+    }
+    .champ-name {
+      font-size: 1rem;
+      font-weight: bold;
+      margin: 5px 0;
+    }
+    .champ-stat {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    /* 2. 사이드 메뉴 (너비 약 20%) */
+    .side-menu {
+      flex: 1; /* 약 20% 차지 */
+      min-width: 260px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    .side-card {
+      background-color: var(--card-navy);
+      border: 2px solid var(--border-navy);
+      border-radius: 10px;
+      padding: 15px;
+    }
+    .side-title {
+      font-size: 1rem;
+      color: var(--gold-main);
+      font-weight: bold;
+      margin-bottom: 10px;
+      border-bottom: 1px solid var(--border-navy);
+      padding-bottom: 8px;
+    }
+    .side-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      font-size: 0.88rem;
+    }
+    .side-list li {
+      display: flex;
+      justify-content: space-between;
+      color: var(--text-main);
+      cursor: pointer;
+    }
+    .side-list li:hover {
+      color: var(--gold-light);
+    }
+    .ad-banner {
+      background: linear-gradient(135deg, #1f293d, #111827);
+      border: 1px dashed var(--gold-main);
+      height: 140px;
+      border-radius: 8px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      text-align: center;
+    }
+
+    /* 반응형 레이아웃 */
+    @media (max-width: 900px) {
+      .content-wrapper {
+        flex-direction: column;
+      }
+      .side-menu {
+        width: 100%;
+      }
+    }
+  </style>
 </head>
-<body class="min-h-screen text-slate-100 flex flex-col justify-between pb-10">
+<body>
 
-    <!-- Toast Container for Notifications -->
-    <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
-
-    <header class="w-full bg-navy-950/90 border-b border-gold-metallic/30 py-2 px-4 text-xs sm:text-sm text-slate-400">
-        <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-2">
-            <div class="flex items-center gap-4">
-                <span class="bg-navy-800 text-gold-400 px-2.5 py-0.5 rounded border border-gold-metallic/40 font-bold">학번: 20608</span>
-                <span class="text-slate-200 font-semibold">기획자: <strong class="gold-gradient-text text-base">김민혁</strong></span>
-                <span class="hidden md:inline-block text-slate-400">| 전적 검색 및 e스포츠 뉴스 공유 플랫폼</span>
-            </div>
-            <div class="flex items-center gap-3 text-xs">
-                <span class="text-gold-400"><i class="fa-solid fa-paint-brush mr-1"></i>남색(#0A1128) & 황금색(#FFD700) 테마</span>
-                <span class="bg-navy-800/80 text-slate-300 px-2 py-0.5 rounded"><i class="fa-solid fa-users mr-1"></i>타깃: 10~30 랭크 유저</span>
-            </div>
-        </div>
-    </header>
-
-    <div class="max-w-7xl mx-auto px-3 sm:px-6 w-full pt-6 flex-grow">
-
-        <!-- 기획서 와이어프레임 1: 헤더 영역 (황금색 테두리 박스) -->
-        <section class="gold-box-frame rounded-2xl p-4 sm:p-6 mb-8 relative overflow-hidden">
-            <div class="absolute -right-10 -bottom-10 w-48 h-48 bg-gold-500/10 rounded-full blur-3xl pointer-events-none"></div>
-            
-            <div class="flex flex-col lg:flex-row items-center justify-between gap-6 relative z-10">
-                <!-- Site Logo -->
-                <div class="flex items-center gap-3 cursor-pointer" onclick="resetToHome()">
-                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-gold-accent via-gold-metallic to-amber-700 flex items-center justify-center text-navy-950 text-2xl font-black shadow-lg shadow-gold-500/30">
-                        G
-                    </div>
-                    <div>
-                        <h1 class="text-2xl sm:text-3xl font-black tracking-wider gold-gradient-text flex items-center gap-2">
-                            GOLD.GG <span class="text-xs px-2 py-0.5 rounded bg-gold-500/20 text-gold-400 border border-gold-500/40 uppercase tracking-normal">eSports</span>
-                        </h1>
-                        <p class="text-xs text-slate-400">대한민국 No.1 랭크전적 및 e스포츠 종합 포털</p>
-                    </div>
-                </div>
-
-                <!-- Integrated Search Bar (통합 전적 검색) -->
-                <div class="w-full lg:max-w-2xl">
-                    <form onsubmit="handleSearch(event)" class="relative flex items-center">
-                        <div class="relative w-full">
-                            <input type="text" id="summoner-search-input" 
-                                class="w-full bg-navy-950/90 border-2 border-gold-metallic/60 rounded-xl py-3.5 pl-12 pr-28 text-white placeholder-slate-400 focus:outline-none focus:border-gold-accent focus:ring-2 focus:ring-gold-accent/40 text-sm sm:text-base transition-all shadow-inner"
-                                placeholder="소환사명, 프로게이머 또는 챔피언 검색 (예: Hide on bush, Chovy)..."
-                                autocomplete="off">
-                            <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gold-400 text-lg"></i>
-                        </div>
-                        <button type="submit" class="gold-button absolute right-1.5 top-1.5 bottom-1.5 px-5 rounded-lg text-sm font-extrabold flex items-center gap-2">
-                            <span>검색</span>
-                            <i class="fa-solid fa-arrow-right"></i>
-                        </button>
-                    </form>
-                    <!-- Quick Search Tag Suggestions -->
-                    <div class="flex items-center gap-2 mt-2 text-xs text-slate-400 overflow-x-auto pb-1">
-                        <span class="text-gold-400 font-semibold flex-shrink-0"><i class="fa-solid fa-fire mr-1"></i>실시간 인기:</span>
-                        <button onclick="quickSearch('Hide on bush')" class="hover:text-gold-accent underline flex-shrink-0">Hide on bush</button>
-                        <span>•</span>
-                        <button onclick="quickSearch('Chovy')" class="hover:text-gold-accent underline flex-shrink-0">Chovy</button>
-                        <span>•</span>
-                        <button onclick="quickSearch('Zeus')" class="hover:text-gold-accent underline flex-shrink-0">Zeus</button>
-                        <span>•</span>
-                        <button onclick="quickSearch('Keria')" class="hover:text-gold-accent underline flex-shrink-0">Keria</button>
-                        <span>•</span>
-                        <button onclick="quickSearch('Viper')" class="hover:text-gold-accent underline flex-shrink-0">Viper</button>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- 메인 기획서 구조 Layout (관심영역 + 본문컨텐츠 VS 사이드메뉴) -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            
-            <!-- LEFT COLUMN: 관심 영역 + 본문 영역 (lg:col-span-8) -->
-            <main class="lg:col-span-8 flex flex-col gap-8">
-                
-                <!-- 기획서 와이어프레임 2: 관심 영역 (원형 아이콘 5개) -->
-                <section class="navy-card p-5 relative overflow-hidden">
-                    <div class="flex items-center justify-between mb-4 border-b border-navy-700/60 pb-3">
-                        <div class="flex items-center gap-2">
-                            <div class="w-3 h-3 rounded-full bg-gold-400 animate-pulse"></div>
-                            <h2 class="text-base sm:text-lg font-bold text-white tracking-wide">
-                                관심 영역 <span class="text-xs font-normal text-gold-400 ml-1">(Quick Navigation / 즐겨찾기)</span>
-                            </h2>
-                        </div>
-                        <span class="text-xs text-slate-400">클릭 시 자동 전적 검색 & 바로가기</span>
-                    </div>
-
-                    <!-- 5 Circular Icons matched with wireframe design -->
-                    <div class="grid grid-cols-5 gap-2 sm:gap-4 text-center py-2">
-                        <!-- Circle 1: Hide on bush (Faker) -->
-                        <button onclick="quickSearch('Hide on bush')" class="group flex flex-col items-center focus:outline-none">
-                            <div class="gold-circle-btn w-12 h-12 sm:w-16 sm:h-16 rounded-full flex items-center justify-center mb-2 cursor-pointer text-navy-950 font-black text-xl sm:text-2xl group-hover:rotate-12 transition-transform">
-                                👑
-                            </div>
-                            <span class="text-xs sm:text-sm font-bold text-slate-200 group-hover:text-gold-accent transition-colors">페이커</span>
-                            <span class="text-[10px] text-slate-400 hidden sm:block">Mid / T1</span>
-                        </button>
-
-                        <!-- Circle 2: Chovy -->
-                        <button onclick="quickSearch('Chovy')" class="group flex flex-col items-center focus:outline-none">
-                            <div class="gold-circle-btn w-12 h-12 sm:w-16 sm:h-16 rounded-full flex items-center justify-center mb-2 cursor-pointer text-navy-950 font-black text-xl sm:text-2xl group-hover:rotate-12 transition-transform">
-                                ⚡
-                            </div>
-                            <span class="text-xs sm:text-sm font-bold text-slate-200 group-hover:text-gold-accent transition-colors">쵸비</span>
-                            <span class="text-[10px] text-slate-400 hidden sm:block">Mid / GEN</span>
-                        </button>
-
-                        <!-- Circle 3: Zeus -->
-                        <button onclick="quickSearch('Zeus')" class="group flex flex-col items-center focus:outline-none">
-                            <div class="gold-circle-btn w-12 h-12 sm:w-16 sm:h-16 rounded-full flex items-center justify-center mb-2 cursor-pointer text-navy-950 font-black text-xl sm:text-2xl group-hover:rotate-12 transition-transform">
-                                🛡️
-                            </div>
-                            <span class="text-xs sm:text-sm font-bold text-slate-200 group-hover:text-gold-accent transition-colors">제우스</span>
-                            <span class="text-[10px] text-slate-400 hidden sm:block">Top / HLE</span>
-                        </button>
-
-                        <!-- Circle 4: Champion Tier -->
-                        <button onclick="filterMainContent('tier')" class="group flex flex-col items-center focus:outline-none">
-                            <div class="gold-circle-btn w-12 h-12 sm:w-16 sm:h-16 rounded-full flex items-center justify-center mb-2 cursor-pointer text-navy-950 font-black text-xl sm:text-2xl group-hover:rotate-12 transition-transform">
-                                🔥
-                            </div>
-                            <span class="text-xs sm:text-sm font-bold text-slate-200 group-hover:text-gold-accent transition-colors">1티어 분석</span>
-                            <span class="text-[10px] text-slate-400 hidden sm:block">OP 챔피언</span>
-                        </button>
-
-                        <!-- Circle 5: Top Rankings -->
-                        <button onclick="filterMainContent('ranking')" class="group flex flex-col items-center focus:outline-none">
-                            <div class="gold-circle-btn w-12 h-12 sm:w-16 sm:h-16 rounded-full flex items-center justify-center mb-2 cursor-pointer text-navy-950 font-black text-xl sm:text-2xl group-hover:rotate-12 transition-transform">
-                                📊
-                            </div>
-                            <span class="text-xs sm:text-sm font-bold text-slate-200 group-hover:text-gold-accent transition-colors">랭킹 TOP</span>
-                            <span class="text-[10px] text-slate-400 hidden sm:block">솔로랭크</span>
-                        </button>
-                    </div>
-                </section>
-
-                <!-- 기획서 와이어프레임 3: 본문 영역 (전적 검색 결과 & e스포츠 컨텐츠) -->
-                <section class="flex flex-col gap-6">
-
-                    <!-- Summoner Profile Header Card (검색 결과 프로필) -->
-                    <div id="summoner-profile-card" class="navy-card p-6 border-gold-metallic/50 relative overflow-hidden">
-                        <!-- Profile Header Layout -->
-                        <div class="flex flex-col sm:flex-row items-center sm:items-start gap-6">
-                            <!-- Icon & Level -->
-                            <div class="relative">
-                                <div class="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl overflow-hidden border-2 border-gold-metallic p-1 bg-navy-900 shadow-xl">
-                                    <img id="profile-icon" src="https://placehold.co/120x120/0F1A36/FFD700?text=Faker" alt="소환사 아이콘" class="w-full h-full object-cover rounded-xl">
-                                </div>
-                                <span id="profile-level" class="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-gold-metallic text-navy-950 font-black text-xs px-2.5 py-0.5 rounded-full border border-yellow-200">
-                                    Lv. 842
-                                </span>
-                            </div>
-
-                            <!-- Summoner Info & Tier Details -->
-                            <div class="flex-grow text-center sm:text-left">
-                                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
-                                    <div>
-                                        <h2 id="summoner-name" class="text-2xl sm:text-3xl font-black text-white tracking-tight">
-                                            Hide on bush
-                                        </h2>
-                                        <p id="summoner-tag" class="text-xs text-gold-400 font-semibold mt-0.5">#KR1 • T1 Esports Midlaner</p>
-                                    </div>
-                                    <div class="flex items-center justify-center sm:justify-end gap-2">
-                                        <button onclick="favoriteSummoner()" class="px-3 py-1.5 rounded-lg bg-navy-800 hover:bg-gold-500/20 text-gold-400 border border-gold-metallic/40 text-xs font-bold transition-all">
-                                            <i class="fa-solid fa-star mr-1"></i>관심 등록
-                                        </button>
-                                        <button onclick="shareProfile()" class="px-3 py-1.5 rounded-lg bg-navy-800 hover:bg-navy-700 text-slate-300 text-xs font-bold transition-all">
-                                            <i class="fa-solid fa-share-nodes mr-1"></i>공유
-                                        </button>
-                                    </div>
-                                </div>
-
-                                <!-- Tier Badge + Detailed Stats Grid -->
-                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-4 bg-navy-900/90 p-3.5 rounded-xl border border-navy-700/80">
-                                    <!-- Tier Badge -->
-                                    <div class="flex items-center gap-3 border-b sm:border-b-0 sm:border-r border-navy-700 pb-2 sm:pb-0">
-                                        <div class="w-12 h-12 rounded-full bg-amber-500/10 border border-gold-metallic/40 flex items-center justify-center text-gold-accent text-2xl font-black">
-                                            🏆
-                                        </div>
-                                        <div>
-                                            <p class="text-[10px] text-slate-400 uppercase tracking-wider">솔로랭크</p>
-                                            <p id="tier-name" class="text-sm font-extrabold gold-gradient-text">Challenger 1,542 LP</p>
-                                            <p id="tier-winloss" class="text-xs text-slate-400">320승 210패 (60.4%)</p>
-                                        </div>
-                                    </div>
-
-                                    <!-- KDA Stats -->
-                                    <div class="flex flex-col justify-center border-b sm:border-b-0 sm:border-r border-navy-700 pb-2 sm:pb-0">
-                                        <p class="text-[10px] text-slate-400 uppercase tracking-wider">최근 20경기 평균</p>
-                                        <p id="kda-ratio" class="text-sm font-black text-emerald-400">3.85:1 KDA</p>
-                                        <p id="kda-detail" class="text-xs text-slate-300">8.2 / 3.1 / 8.7 (킬관여 68%)</p>
-                                    </div>
-
-                                    <!-- Most Champions -->
-                                    <div class="flex flex-col justify-center">
-                                        <p class="text-[10px] text-slate-400 uppercase tracking-wider mb-1">모스트 챔피언</p>
-                                        <div id="most-champs" class="flex items-center gap-1.5">
-                                            <span class="px-2 py-0.5 rounded bg-navy-800 text-xs font-bold text-gold-400 border border-gold-metallic/30">아지르 68%</span>
-                                            <span class="px-2 py-0.5 rounded bg-navy-800 text-xs font-bold text-slate-300">오리아나 62%</span>
-                                            <span class="px-2 py-0.5 rounded bg-navy-800 text-xs font-bold text-slate-300">아리 58%</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Filter Tabs for Main Content -->
-                    <div class="flex items-center justify-between border-b border-navy-700 pb-2 overflow-x-auto">
-                        <div class="flex items-center gap-2 min-w-max">
-                            <button onclick="filterMatches('all')" id="tab-match-all" class="px-4 py-2 rounded-lg text-xs sm:text-sm font-extrabold bg-gold-metallic text-navy-950 transition-all">
-                                전체 경기
-                            </button>
-                            <button onclick="filterMatches('solo')" id="tab-match-solo" class="px-4 py-2 rounded-lg text-xs sm:text-sm font-bold bg-navy-800 text-slate-300 hover:text-gold-accent transition-all">
-                                솔로랭크
-                            </button>
-                            <button onclick="filterMatches('flex')" id="tab-match-flex" class="px-4 py-2 rounded-lg text-xs sm:text-sm font-bold bg-navy-800 text-slate-300 hover:text-gold-accent transition-all">
-                                자유랭크
-                            </button>
-                            <button onclick="showEsportsNews()" id="tab-esports-news" class="px-4 py-2 rounded-lg text-xs sm:text-sm font-bold bg-navy-800 text-slate-300 hover:text-gold-accent transition-all">
-                                e스포츠 뉴스
-                            </button>
-                        </div>
-                        <span class="text-xs text-slate-400 hidden sm:block">실시간 매치 동기화 됨</span>
-                    </div>
-
-                    <!-- Match History Container (최근 경기 기록 리스트) -->
-                    <div id="match-list-container" class="space-y-3">
-                        <!-- Match items will be dynamically injected by JS -->
-                    </div>
-
-                    <!-- eSports News Section Container (Hidden by default, shown via tabs) -->
-                    <div id="esports-news-container" class="hidden space-y-4">
-                        <div class="navy-card p-5">
-                            <div class="flex justify-between items-center mb-4">
-                                <h3 class="text-lg font-bold text-white gold-gradient-text">🔥 e스포츠 최신 뉴스 & 경기 정보</h3>
-                                <span class="text-xs text-gold-400">LCK 2026 Spring Season</span>
-                            </div>
-
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <article class="bg-navy-900 rounded-xl p-4 border border-navy-700 hover:border-gold-metallic/50 transition-all cursor-pointer">
-                                    <div class="h-36 rounded-lg bg-slate-800 mb-3 overflow-hidden relative">
-                                        <img src="https://placehold.co/600x300/0A1128/FFD700?text=LCK+Playoffs+2026" alt="LCK 뉴스" class="w-full h-full object-cover">
-                                        <span class="absolute top-2 left-2 bg-red-600 text-white text-[10px] font-black px-2 py-0.5 rounded">HOT</span>
-                                    </div>
-                                    <span class="text-xs text-gold-400 font-semibold">[LCK 스페셜]</span>
-                                    <h4 class="font-bold text-slate-100 text-sm mt-1 hover:text-gold-accent">T1 vs GEN.G 2026 결승 직행전 패치 분석 및 프리뷰</h4>
-                                    <p class="text-xs text-slate-400 mt-1 line-clamp-2">미드 라이너 페이커와 쵸비의 시그니처 챔피언 밴픽 전략 집중 탐구...</p>
-                                    <div class="mt-3 text-[11px] text-slate-500 flex justify-between">
-                                        <span>e스포츠 기자 김민혁</span>
-                                        <span>10분 전</span>
-                                    </div>
-                                </article>
-
-                                <article class="bg-navy-900 rounded-xl p-4 border border-navy-700 hover:border-gold-metallic/50 transition-all cursor-pointer">
-                                    <div class="h-36 rounded-lg bg-slate-800 mb-3 overflow-hidden relative">
-                                        <img src="https://placehold.co/600x300/101C3D/FFD700?text=Patch+Note+16.5" alt="패치 뉴스" class="w-full h-full object-cover">
-                                        <span class="absolute top-2 left-2 bg-blue-600 text-white text-[10px] font-black px-2 py-0.5 rounded">분석</span>
-                                    </div>
-                                    <span class="text-xs text-gold-400 font-semibold">[밸런스 패치]</span>
-                                    <h4 class="font-bold text-slate-100 text-sm mt-1 hover:text-gold-accent">16.5 패치 노이즈 총정리: AP 암살자 메타의 도래</h4>
-                                    <p class="text-xs text-slate-400 mt-1 line-clamp-2">아칼리, 르블랑 주문력 계수 버프와 신규 정글 아이템 추가로 변화하는 천상계 티어...</p>
-                                    <div class="mt-3 text-[11px] text-slate-500 flex justify-between">
-                                        <span>분석팀</span>
-                                        <span>1시간 전</span>
-                                    </div>
-                                </article>
-                            </div>
-                        </div>
-                    </div>
-
-                </section>
-            </main>
-
-            <!-- RIGHT COLUMN: 사이드 메뉴 (lg:col-span-4) -->
-            <aside class="lg:col-span-4 flex flex-col gap-6">
-
-                <!-- 1. Top Mini Status / User Rank Card -->
-                <div class="navy-card p-4 border-gold-metallic/40">
-                    <div class="flex items-center justify-between text-xs text-slate-400 mb-2">
-                        <span>실시간 대전 서버 상태</span>
-                        <span class="text-emerald-400 flex items-center gap-1"><i class="fa-solid fa-circle text-[8px]"></i> 원활 (12ms)</span>
-                    </div>
-                    <div class="bg-navy-900 p-3 rounded-lg border border-navy-700 flex items-center justify-between">
-                        <div>
-                            <p class="text-xs text-slate-400">내 티어 예측기</p>
-                            <p class="text-sm font-bold text-gold-accent">Diamond I • 78 LP</p>
-                        </div>
-                        <button onclick="showToast('내 전적과 연동되었습니다.')" class="px-2.5 py-1 text-xs font-bold bg-gold-metallic text-navy-950 rounded hover:bg-gold-accent">
-                            내 전적 연동
-                        </button>
-                    </div>
-                </div>
-
-                <!-- 2. Champion Tier Analysis (챔피언 티어 분석) -->
-                <div class="navy-card p-5">
-                    <div class="flex items-center justify-between mb-3 border-b border-navy-700 pb-2">
-                        <h3 class="font-bold text-white text-sm flex items-center gap-2">
-                            <i class="fa-solid fa-crown text-gold-400"></i> 라인별 1티어 챔피언
-                        </h3>
-                        <span class="text-[10px] text-slate-400">v16.5 패치 기준</span>
-                    </div>
-
-                    <!-- Lane Selector Tabs -->
-                    <div class="grid grid-cols-5 gap-1 mb-3 bg-navy-900 p-1 rounded-lg text-center text-xs">
-                        <button onclick="setLaneTier('TOP')" id="lane-TOP" class="py-1 rounded font-bold bg-gold-metallic text-navy-950">TOP</button>
-                        <button onclick="setLaneTier('JGL')" id="lane-JGL" class="py-1 rounded font-bold text-slate-400 hover:text-white">JGL</button>
-                        <button onclick="setLaneTier('MID')" id="lane-MID" class="py-1 rounded font-bold text-slate-400 hover:text-white">MID</button>
-                        <button onclick="setLaneTier('ADC')" id="lane-ADC" class="py-1 rounded font-bold text-slate-400 hover:text-white">ADC</button>
-                        <button onclick="setLaneTier('SUP')" id="lane-SUP" class="py-1 rounded font-bold text-slate-400 hover:text-white">SUP</button>
-                    </div>
-
-                    <!-- Tier List Container -->
-                    <div id="lane-tier-list" class="space-y-2">
-                        <!-- Injected via JS -->
-                    </div>
-                </div>
-
-                <!-- 3. eSports Match Schedule (e스포츠 경기 일정) -->
-                <div class="navy-card p-5">
-                    <div class="flex items-center justify-between mb-3 border-b border-navy-700 pb-2">
-                        <h3 class="font-bold text-white text-sm flex items-center gap-2">
-                            <i class="fa-solid fa-calendar-days text-gold-400"></i> e스포츠 경기 일정
-                        </h3>
-                        <span class="text-[10px] bg-red-600/80 text-white font-bold px-1.5 py-0.5 rounded animate-pulse">LIVE</span>
-                    </div>
-
-                    <div class="space-y-3">
-                        <!-- Match 1 -->
-                        <div class="bg-navy-900 p-3 rounded-xl border border-navy-700">
-                            <div class="flex justify-between text-[11px] text-slate-400 mb-1.5">
-                                <span>LCK Spring 2026 • Match 42</span>
-                                <span class="text-red-400 font-bold">2세트 진행중</span>
-                            </div>
-                            <div class="flex items-center justify-between text-sm font-extrabold">
-                                <div class="flex items-center gap-2">
-                                    <span class="w-6 h-6 rounded bg-red-900/60 text-white flex items-center justify-center text-xs">T1</span>
-                                    <span>T1</span>
-                                </div>
-                                <span class="text-gold-accent font-black text-base">1 : 0</span>
-                                <div class="flex items-center gap-2">
-                                    <span>GEN</span>
-                                    <span class="w-6 h-6 rounded bg-yellow-900/60 text-white flex items-center justify-center text-xs">GEN</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Match 2 -->
-                        <div class="bg-navy-900 p-3 rounded-xl border border-navy-700">
-                            <div class="flex justify-between text-[11px] text-slate-400 mb-1.5">
-                                <span>LCK Spring 2026 • Match 43</span>
-                                <span class="text-gold-400">오늘 19:00</span>
-                            </div>
-                            <div class="flex items-center justify-between text-sm font-extrabold">
-                                <div class="flex items-center gap-2">
-                                    <span class="w-6 h-6 rounded bg-orange-900/60 text-white flex items-center justify-center text-xs">HLE</span>
-                                    <span>HLE</span>
-                                </div>
-                                <span class="text-slate-500 font-black text-xs">VS</span>
-                                <div class="flex items-center gap-2">
-                                    <span>DK</span>
-                                    <span class="w-6 h-6 rounded bg-blue-900/60 text-white flex items-center justify-center text-xs">DK</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 4. Community Popular Posts (커뮤니티 인기글) -->
-                <div class="navy-card p-5">
-                    <div class="flex items-center justify-between mb-3 border-b border-navy-700 pb-2">
-                        <h3 class="font-bold text-white text-sm flex items-center gap-2">
-                            <i class="fa-solid fa-comments text-gold-400"></i> 유저 커뮤니티 인기글
-                        </h3>
-                        <button onclick="showToast('게시판으로 이동합니다.')" class="text-xs text-gold-400 hover:underline">전체보기</button>
-                    </div>
-
-                    <ul class="space-y-2 text-xs">
-                        <li class="flex justify-between items-center bg-navy-900/60 p-2 rounded border border-navy-800 hover:border-gold-metallic/30 cursor-pointer">
-                            <span class="truncate text-slate-200 hover:text-gold-accent">솔랭 솔직히 이번 패치 원딜 생존력 늘어남?</span>
-                            <span class="text-[10px] text-gold-400 font-bold ml-2">💬 42</span>
-                        </li>
-                        <li class="flex justify-between items-center bg-navy-900/60 p-2 rounded border border-navy-800 hover:border-gold-metallic/30 cursor-pointer">
-                            <span class="truncate text-slate-200 hover:text-gold-accent">골드에서 다이아까지 3달 만에 올라간 팁 공유</span>
-                            <span class="text-[10px] text-gold-400 font-bold ml-2">💬 89</span>
-                        </li>
-                        <li class="flex justify-between items-center bg-navy-900/60 p-2 rounded border border-navy-800 hover:border-gold-metallic/30 cursor-pointer">
-                            <span class="truncate text-slate-200 hover:text-gold-accent">이번 LCK 페이커 아지르 플레이 자갈 모음.gif</span>
-                            <span class="text-[10px] text-gold-400 font-bold ml-2">💬 120</span>
-                        </li>
-                    </ul>
-                </div>
-
-                <!-- 5. Sponsor / Promotion Banner Card (각종 광고 및 제휴) -->
-                <div class="gold-box-frame p-4 rounded-xl text-center relative overflow-hidden">
-                    <span class="text-[9px] bg-gold-metallic text-navy-950 font-bold px-1.5 py-0.5 rounded absolute top-2 right-2">SPONSORED</span>
-                    <i class="fa-solid fa-headset text-3xl text-gold-accent mb-2"></i>
-                    <h4 class="font-black text-sm text-white gold-gradient-text">GOLD GAMING GEAR</h4>
-                    <p class="text-xs text-slate-300 mt-1">10~30대 랭크 유저를 위한 초고속 리액션 게이밍 마우스 출시</p>
-                    <button onclick="showToast('프로모션 페이지로 이동합니다.')" class="mt-3 gold-button w-full py-2 rounded-lg text-xs font-black">
-                        특별 할인 쿠폰 받기
-                    </button>
-                </div>
-
-            </aside>
-        </div>
-
+  <div class="container">
+    <!-- 기획서 상단 정보 바 -->
+    <div class="info-header">
+      <div><span>학번:</span> 20608 | <span>이름:</span> 김민혁</div>
+      <div><span>주제:</span> 전적 검색 및 e스포츠 뉴스 공유</div>
+      <div><span>디자인:</span> 남색 & 황금색 세련된 테마</div>
     </div>
 
-    <!-- FOOTER -->
-    <footer class="mt-16 border-t border-navy-700/80 bg-navy-950 py-8 text-slate-400 text-xs">
-        <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
-            <div>
-                <p class="font-bold text-slate-200 text-sm">GOLD.GG — 전적 검색 및 e스포츠 포털</p>
-                <p class="mt-1 text-slate-500">기획 및 제작: 김민혁 (학번: 20608) | 테마: Deep Navy & Metallic Gold</p>
-                <p class="text-[11px] text-slate-600 mt-0.5">GOLD.GG isn’t endorsed by Riot Games and doesn’t reflect the views or opinions of Riot Games.</p>
+    <!-- 1. 헤더 영역 (통합 전적 사이트 검색) -->
+    <header class="header-section">
+      <div class="search-title">⚔️ GG.SEARCH 통합 전적 검색</div>
+      <div class="search-box">
+        <input type="text" class="search-input" id="searchInput" placeholder="소환사명 또는 챔피언 이름을 입력하세요 (예: Hide on bush)">
+        <button class="search-btn" onclick="handleSearch()">검색하기</button>
+      </div>
+    </header>
+
+    <!-- 본문 컨텐츠 레이아웃 (본문 80% + 사이드 20%) -->
+    <div class="content-wrapper">
+      
+      <!-- 3. 본문 영역 (화면 너비 약 80%) -->
+      <main class="main-content">
+        
+        <!-- 4. 관심 영역 (모스트 챔피언 5종 / 프로게이머 개인화 영역) -->
+        <section class="favorite-section">
+          <div class="section-title">⭐ 관심 영역 (즐겨찾기 모스트 챔피언 & 소환사)</div>
+          <div class="favorite-icons">
+            <div class="fav-item" onclick="alert('페이커(Faker) 전적 페이지로 이동합니다.')">
+              <div class="fav-circle">👑</div>
+              <div class="fav-name">Faker</div>
             </div>
-            <div class="flex items-center gap-4 text-slate-400">
-                <a href="#" class="hover:text-gold-400">개인정보처리방침</a>
-                <span>•</span>
-                <a href="#" class="hover:text-gold-400">이용약관</a>
-                <span>•</span>
-                <a href="#" class="hover:text-gold-400">광고문의</a>
+            <div class="fav-item" onclick="alert('아리 챔피언 분석 페이지로 이동합니다.')">
+              <div class="fav-circle">🦊</div>
+              <div class="fav-name">아리</div>
             </div>
+            <div class="fav-item" onclick="alert('리신 챔피언 분석 페이지로 이동합니다.')">
+              <div class="fav-circle">🥊</div>
+              <div class="fav-name">리 신</div>
+            </div>
+            <div class="fav-item" onclick="alert('Chovy 전적 페이지로 이동합니다.')">
+              <div class="fav-circle">⚡</div>
+              <div class="fav-name">Chovy</div>
+            </div>
+            <div class="fav-item" onclick="alert('제우스 전적 페이지로 이동합니다.')">
+              <div class="fav-circle">🛡️</div>
+              <div class="fav-name">Zeus</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 5. 신규 패치 하이라이트 영상 / 스킨 / 매드무비 중앙 배치 -->
+        <section class="highlight-banner">
+          <span class="banner-badge">NEW PATCH HIGHLIGHT</span>
+          <div class="banner-title">🎬 14.20 패치 하이라이트 & 신규 전설급 스킨 공개</div>
+          <div class="banner-desc">금주의 명장면 매드무비 및 챔피언 밸런스 패치 핵심 요약 영상을 확인하세요.</div>
+        </section>
+
+        <!-- 본문 메인 피드 (1티어 챔피언 및 실시간 메타 분석) -->
+        <section class="meta-feed">
+          <div class="section-title">📊 실시간 게임 메타 분석 & 1티어 챔피언</div>
+          <p style="color: var(--text-muted); font-size: 0.9rem;">현재 솔로랭크 승률 및 픽률 기준 최상위 챔피언 정보입니다.</p>
+          
+          <div class="champion-grid">
+            <div class="champ-card">
+              <div class="champ-badge">OP 1티어</div>
+              <div class="champ-name">아리</div>
+              <div class="champ-stat">승률 52.4%</div>
+            </div>
+            <div class="champ-card">
+              <div class="champ-badge">OP 1티어</div>
+              <div class="champ-name">카이사</div>
+              <div class="champ-stat">승률 51.8%</div>
+            </div>
+            <div class="champ-card">
+              <div class="champ-badge">1티어</div>
+              <div class="champ-name">자르반 4세</div>
+              <div class="champ-stat">승률 52.1%</div>
+            </div>
+            <div class="champ-card">
+              <div class="champ-badge">1티어</div>
+              <div class="champ-name">쓰레쉬</div>
+              <div class="champ-stat">승률 51.2%</div>
+            </div>
+            <div class="champ-card">
+              <div class="champ-badge">1티어</div>
+              <div class="champ-name">아트록스</div>
+              <div class="champ-stat">승률 50.9%</div>
+            </div>
+          </div>
+        </section>
+
+      </main>
+
+      <!-- 2. 사이드 메뉴 (너비 약 20%) -->
+      <aside class="side-menu">
+        
+        <!-- 챔피언 티어 분석 -->
+        <div class="side-card">
+          <div class="side-title">🏆 라인별 티어 분석</div>
+          <ul class="side-list">
+            <li><span>TOP</span><span style="color:var(--gold-main)">아트록스, 람머스</span></li>
+            <li><span>JGL</span><span style="color:var(--gold-main)">자르반 4세, 리신</span></li>
+            <li><span>MID</span><span style="color:var(--gold-main)">아리, 오리아나</span></li>
+            <li><span>ADC</span><span style="color:var(--gold-main)">카이사, 이즈리얼</span></li>
+            <li><span>SUP</span><span style="color:var(--gold-main)">쓰레쉬, 노틸러스</span></li>
+          </ul>
         </div>
-    </footer>
 
-    <script>
-        // Mock Summoner Database
-        const summonerDB = {
-            "hide on bush": {
-                name: "Hide on bush",
-                tag: "#KR1 • T1 Midlaner",
-                level: "Lv. 842",
-                tier: "Challenger 1,542 LP",
-                winrate: "320승 210패 (60.4%)",
-                kdaRatio: "3.85:1 KDA",
-                kdaDetail: "8.2 / 3.1 / 8.7 (킬관여 68%)",
-                icon: "https://placehold.co/120x120/0F1A36/FFD700?text=Faker",
-                champs: ["아지르 68%", "오리아나 62%", "아리 58%"],
-                matches: [
-                    { type: "솔로랭크", win: true, champ: "아지르", champImg: "⚡", kda: "11 / 2 / 9", kdaRatio: "10.0:1", cs: "284 CS (9.2)", damage: "32.4K", items: ["👑", "🔮", "⚡", "👟"] },
-                    { type: "솔로랭크", win: true, champ: "오리아나", champImg: "🔮", kda: "7 / 1 / 14", kdaRatio: "21.0:1", cs: "260 CS (8.8)", damage: "28.1K", items: ["🔮", "📜", "👟"] },
-                    { type: "솔로랭크", win: false, champ: "아리", champImg: "🦊", kda: "5 / 4 / 6", kdaRatio: "2.75:1", cs: "210 CS (7.5)", damage: "19.8K", items: ["🦊", "👟"] },
-                    { type: "자유랭크", win: true, champ: "빅토르", champImg: "🤖", kda: "9 / 3 / 11", kdaRatio: "6.67:1", cs: "310 CS (10.1)", damage: "38.5K", items: ["👑", "⚡", "👟"] },
-                ]
-            },
-            "chovy": {
-                name: "Chovy",
-                tag: "#KR1 • GEN Midlaner",
-                level: "Lv. 790",
-                tier: "Challenger 1,680 LP",
-                winrate: "350승 190패 (64.8%)",
-                kdaRatio: "4.52:1 KDA",
-                kdaDetail: "9.1 / 2.3 / 7.2 (킬관여 71%)",
-                icon: "https://placehold.co/120x120/0A1128/F59E0B?text=Chovy",
-                champs: ["요네 72%", "코르키 69%", "아지르 65%"],
-                matches: [
-                    { type: "솔로랭크", win: true, champ: "요네", champImg: "⚔️", kda: "14 / 1 / 8", kdaRatio: "22.0:1", cs: "340 CS (11.2)", damage: "41.2K", items: ["⚔️", "🛡️", "👟"] },
-                    { type: "솔로랭크", win: true, champ: "코르키", champImg: "🚀", kda: "8 / 2 / 10", kdaRatio: "9.0:1", cs: "320 CS (10.5)", damage: "35.0K", items: ["🚀", "⚡"] },
-                    { type: "자유랭크", win: false, champ: "아칼리", champImg: "🗡️", kda: "6 / 5 / 4", kdaRatio: "2.0:1", cs: "230 CS (8.1)", damage: "22.1K", items: ["🗡️"] },
-                ]
-            },
-            "zeus": {
-                name: "Zeus",
-                tag: "#KR1 • HLE Toplaner",
-                level: "Lv. 680",
-                tier: "Challenger 1,420 LP",
-                winrate: "290승 200패 (59.1%)",
-                kdaRatio: "3.20:1 KDA",
-                kdaDetail: "7.4 / 4.1 / 5.7 (킬관여 61%)",
-                icon: "https://placehold.co/120x120/142247/FFD700?text=Zeus",
-                champs: ["제이스 65%", "요네 61%", "크산테 59%"],
-                matches: [
-                    { type: "솔로랭크", win: true, champ: "제이스", champImg: "🔨", kda: "10 / 3 / 7", kdaRatio: "5.67:1", cs: "295 CS (9.5)", damage: "34.1K", items: ["🔨", "⚡", "👟"] },
-                    { type: "솔로랭크", win: false, champ: "크산테", champImg: "🛡️", kda: "2 / 4 / 5", kdaRatio: "1.75:1", cs: "220 CS (7.8)", damage: "16.4K", items: ["🛡️"] },
-                ]
-            },
-            "keria": {
-                name: "Keria",
-                tag: "#KR1 • T1 Support",
-                level: "Lv. 810",
-                tier: "Challenger 1,350 LP",
-                winrate: "310승 230패 (57.4%)",
-                kdaRatio: "4.10:1 KDA",
-                kdaDetail: "2.1 / 3.0 / 14.2 (킬관여 75%)",
-                icon: "https://placehold.co/120x120/1E315E/FFD700?text=Keria",
-                champs: ["럭스 70%", "바드 64%", "탐켄치 60%"],
-                matches: [
-                    { type: "솔로랭크", win: true, champ: "럭스", champImg: "✨", kda: "4 / 1 / 18", kdaRatio: "22.0:1", cs: "45 CS (1.5)", damage: "24.5K", items: ["✨", "👁️", "👟"] },
-                    { type: "솔로랭크", win: true, champ: "바드", champImg: "🔔", kda: "1 / 2 / 16", kdaRatio: "8.5:1", cs: "38 CS (1.2)", damage: "12.1K", items: ["🔔", "👁️"] },
-                ]
-            },
-            "viper": {
-                name: "Viper",
-                tag: "#KR1 • HLE ADC",
-                level: "Lv. 750",
-                tier: "Challenger 1,390 LP",
-                winrate: "305승 210패 (59.2%)",
-                kdaRatio: "3.95:1 KDA",
-                kdaDetail: "9.5 / 3.2 / 6.1 (킬관여 65%)",
-                icon: "https://placehold.co/120x120/0A1128/FFD700?text=Viper",
-                champs: ["제리 67%", "루시안 63%", "카이사 60%"],
-                matches: [
-                    { type: "솔로랭크", win: true, champ: "제리", champImg: "⚡", kda: "13 / 2 / 8", kdaRatio: "10.5:1", cs: "312 CS (10.1)", damage: "39.4K", items: ["⚡", "🏹", "👟"] },
-                    { type: "솔로랭크", win: false, champ: "루시안", champImg: "🔫", kda: "6 / 6 / 3", kdaRatio: "1.5:1", cs: "240 CS (8.3)", damage: "21.0K", items: ["🔫"] },
-                ]
-            }
-        };
+        <!-- e스포츠 경기 일정 -->
+        <div class="side-card">
+          <div class="side-title">📅 e스포츠 경기 일정</div>
+          <ul class="side-list">
+            <li><span>17:00</span><span>T1 vs GEN.G</span></li>
+            <li><span>20:00</span><span>DK vs KT</span></li>
+          </ul>
+        </div>
 
-        // Champion Tier Database by Lane
-        const laneTiers = {
-            "TOP": [
-                { rank: 1, name: "크산테", tier: "OP", win: "52.4%", pick: "14.2%", ban: "31.0%", icon: "🛡️" },
-                { rank: 2, name: "제이스", tier: "1티어", win: "51.8%", pick: "11.5%", ban: "22.1%", icon: "🔨" },
-                { rank: 3, name: "아트록스", tier: "1티어", win: "51.1%", pick: "15.0%", ban: "18.4%", icon: "⚔️" },
-                { rank: 4, name: "레넥톤", tier: "2티어", win: "50.2%", pick: "9.8%", ban: "12.0%", icon: "🐊" },
-            ],
-            "JGL": [
-                { rank: 1, name: "리신", tier: "OP", win: "53.1%", pick: "22.4%", ban: "35.2%", icon: "🐉" },
-                { rank: 2, name: "비에고", tier: "1티어", win: "52.0%", pick: "18.1%", ban: "20.5%", icon: "👑" },
-                { rank: 3, name: "자르반 4세", tier: "1티어", win: "51.5%", pick: "12.3%", ban: "15.0%", icon: "🛡️" },
-                { rank: 4, name: "세주아니", tier: "2티어", win: "50.8%", pick: "8.9%", ban: "7.1%", icon: "🐗" },
-            ],
-            "MID": [
-                { rank: 1, name: "아지르", tier: "OP", win: "53.8%", pick: "19.5%", ban: "42.0%", icon: "⚡" },
-                { rank: 2, name: "오리아나", tier: "1티어", win: "52.2%", pick: "16.1%", ban: "25.0%", icon: "🔮" },
-                { rank: 3, name: "아리", tier: "1티어", win: "51.9%", pick: "14.8%", ban: "18.2%", icon: "🦊" },
-                { rank: 4, name: "요네", tier: "2티어", win: "50.5%", pick: "13.2%", ban: "28.5%", icon: "⚔️" },
-            ],
-            "ADC": [
-                { rank: 1, name: "제리", tier: "OP", win: "54.2%", pick: "21.0%", ban: "38.5%", icon: "⚡" },
-                { rank: 2, name: "루시안", tier: "1티어", win: "52.5%", pick: "17.4%", ban: "22.0%", icon: "🔫" },
-                { rank: 3, name: "카이사", tier: "1티어", win: "51.8%", pick: "25.1%", ban: "15.4%", icon: "🏹" },
-                { rank: 4, name: "이즈리얼", tier: "2티어", win: "49.8%", pick: "28.0%", ban: "8.5%", icon: "💫" },
-            ],
-            "SUP": [
-                { rank: 1, name: "노틸러스", tier: "OP", win: "53.5%", pick: "20.1%", ban: "32.0%", icon: "⚓" },
-                { rank: 2, name: "럭스", tier: "1티어", win: "52.1%", pick: "18.5%", ban: "21.2%", icon: "✨" },
-                { rank: 3, name: "라칸", tier: "1티어", win: "51.6%", pick: "12.0%", ban: "14.5%", icon: "🪶" },
-                { rank: 4, name: "바드", tier: "2티어", win: "51.0%", pick: "7.8%", ban: "9.1%", icon: "🔔" },
-            ]
-        };
+        <!-- 최신 패치 노트 -->
+        <div class="side-card">
+          <div class="side-title">📜 최신 패치 노트</div>
+          <ul class="side-list">
+            <li>14.20 패치 챔피언 버프/너프</li>
+            <li>신규 스킨 라인업 안내</li>
+          </ul>
+        </div>
 
-        let currentActiveSummoner = "hide on bush";
-        let currentFilterMode = "all";
+        <!-- 커뮤니티 인기글 -->
+        <div class="side-card">
+          <div class="side-title">🔥 커뮤니티 인기글</div>
+          <ul class="side-list">
+            <li>솔랭 티어 올려주는 꿀팁 5가지</li>
+            <li>이번 패치 최대 수혜 챔피언은?</li>
+          </ul>
+        </div>
 
-        window.onload = function() {
-            renderSummonerProfile(currentActiveSummoner);
-            setLaneTier('TOP');
-        };
+        <!-- 각종 광고 배너 -->
+        <div class="ad-banner">
+          📢 광고 배너 영역<br>(광고 문의: contact@gg.search)
+        </div>
 
-        function handleSearch(e) {
-            e.preventDefault();
-            const input = document.getElementById('summoner-search-input');
-            const query = input.value.trim();
-            if (!query) {
-                showToast("소환사명을 입력해주세요!");
-                return;
-            }
-            quickSearch(query);
-        }
+      </aside>
 
-        function quickSearch(summonerKey) {
-            const normalizedKey = summonerKey.toLowerCase();
-            document.getElementById('summoner-search-input').value = summonerKey;
+    </div>
+  </div>
 
-            // If found in DB
-            if (summonerDB[normalizedKey]) {
-                currentActiveSummoner = normalizedKey;
-                renderSummonerProfile(normalizedKey);
-                showToast(`'${summonerDB[normalizedKey].name}' 전적을 불러왔습니다.`);
-            } else {
-                // Generate Dynamic Mock Profile for unlisted user
-                const dynamicData = generateDynamicSummoner(summonerKey);
-                summonerDB[normalizedKey] = dynamicData;
-                currentActiveSummoner = normalizedKey;
-                renderSummonerProfile(normalizedKey);
-                showToast(`'${summonerKey}' 님의 새로 생성된 전적 데이터입니다.`);
-            }
-            // Ensure matches view is visible
-            filterMatches('all');
-        }
-
-        function generateDynamicSummoner(name) {
-            return {
-                name: name,
-                tag: "#KR1 • 소환사",
-                level: `Lv. ${Math.floor(Math.random() * 400) + 100}`,
-                tier: "Grandmaster 580 LP",
-                winrate: "142승 118패 (54.6%)",
-                kdaRatio: "3.12:1 KDA",
-                kdaDetail: "6.5 / 4.2 / 6.6 (킬관여 58%)",
-                icon: `https://placehold.co/120x120/142247/FFD700?text=${encodeURIComponent(name.substring(0, 4))}`,
-                champs: ["야스오 58%", "리신 55%", "제드 52%"],
-                matches: [
-                    { type: "솔로랭크", win: true, champ: "야스오", champImg: "⚔️", kda: "8 / 3 / 6", kdaRatio: "4.67:1", cs: "245 CS (8.5)", damage: "24.1K", items: ["⚔️", "👟"] },
-                    { type: "솔로랭크", win: false, champ: "제드", champImg: "🗡️", kda: "5 / 6 / 2", kdaRatio: "1.17:1", cs: "210 CS (7.2)", damage: "18.5K", items: ["🗡️"] },
-                    { type: "자유랭크", win: true, champ: "리신", champImg: "🐉", kda: "12 / 2 / 10", kdaRatio: "11.0:1", cs: "180 CS (6.1)", damage: "22.8K", items: ["🐉", "👟"] }
-                ]
-            };
-        }
-
-        function renderSummonerProfile(key) {
-            const data = summonerDB[key];
-            if (!data) return;
-
-            document.getElementById('summoner-name').innerText = data.name;
-            document.getElementById('summoner-tag').innerText = data.tag;
-            document.getElementById('profile-level').innerText = data.level;
-            document.getElementById('tier-name').innerText = data.tier;
-            document.getElementById('tier-winloss').innerText = data.winrate;
-            document.getElementById('kda-ratio').innerText = data.kdaRatio;
-            document.getElementById('kda-detail').innerText = data.kdaDetail;
-            document.getElementById('profile-icon').src = data.icon;
-
-            // Render Most Champs
-            const champBox = document.getElementById('most-champs');
-            champBox.innerHTML = data.champs.map((c, i) => `
-                <span class="px-2 py-0.5 rounded bg-navy-800 text-xs font-bold ${i===0 ? 'text-gold-400 border border-gold-metallic/30' : 'text-slate-300'}">${c}</span>
-            `).join('');
-
-            renderMatches(data.matches);
-        }
-
-        function renderMatches(matches) {
-            const container = document.getElementById('match-list-container');
-            let filtered = matches;
-
-            if (currentFilterMode === 'solo') {
-                filtered = matches.filter(m => m.type === '솔로랭크');
-            } else if (currentFilterMode === 'flex') {
-                filtered = matches.filter(m => m.type === '자유랭크');
-            }
-
-            if (filtered.length === 0) {
-                container.innerHTML = `
-                    <div class="navy-card p-8 text-center text-slate-400">
-                        <i class="fa-solid fa-ghost text-3xl text-slate-600 mb-2"></i>
-                        <p>해당하는 대전 기록이 없습니다.</p>
-                    </div>
-                `;
-                return;
-            }
-
-            container.innerHTML = filtered.map(m => `
-                <div class="${m.win ? 'win-match' : 'loss-match'} p-3.5 rounded-xl border border-navy-700/80 flex flex-col sm:flex-row items-center justify-between gap-4 transition-all hover:scale-[1.01]">
-                    <!-- Left: Result & Game Info -->
-                    <div class="flex items-center gap-4 w-full sm:w-auto">
-                        <div class="text-center w-16 flex-shrink-0">
-                            <span class="text-xs font-extrabold ${m.win ? 'text-blue-400' : 'text-red-400'} block">${m.win ? '승리' : '패배'}</span>
-                            <span class="text-[10px] text-slate-400 block">${m.type}</span>
-                            <span class="text-[9px] text-slate-500 block">31분 20초</span>
-                        </div>
-
-                        <!-- Champ Icon & KDA -->
-                        <div class="flex items-center gap-3">
-                            <div class="w-12 h-12 rounded-xl bg-navy-900 border border-gold-metallic/40 flex items-center justify-center text-2xl shadow">
-                                ${m.champImg}
-                            </div>
-                            <div>
-                                <h4 class="font-bold text-sm text-slate-100 flex items-center gap-1.5">
-                                    ${m.champ}
-                                    ${m.win ? '<span class="text-[9px] bg-blue-500/20 text-blue-300 px-1 rounded">MVP</span>' : ''}
-                                </h4>
-                                <p class="text-xs font-bold text-slate-200 mt-0.5">
-                                    ${m.kda} <span class="text-slate-400 font-normal">(${m.kdaRatio})</span>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Right: CS, Damage, Items -->
-                    <div class="flex items-center justify-between sm:justify-end gap-6 w-full sm:w-auto text-xs text-slate-300 border-t sm:border-t-0 pt-2 sm:pt-0 border-navy-700">
-                        <div class="text-right">
-                            <p class="text-slate-400 text-[11px]">${m.cs}</p>
-                            <p class="text-gold-400 font-bold text-[11px]">딜량 ${m.damage}</p>
-                        </div>
-                        <div class="flex items-center gap-1">
-                            ${m.items.map(item => `<span class="w-7 h-7 rounded bg-navy-900 border border-navy-700 flex items-center justify-center text-sm">${item}</span>`).join('')}
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function filterMatches(mode) {
-            currentFilterMode = mode;
-            document.getElementById('match-list-container').classList.remove('hidden');
-            document.getElementById('esports-news-container').classList.add('hidden');
-
-            // Reset tab styles
-            ['all', 'solo', 'flex'].forEach(t => {
-                const btn = document.getElementById(`tab-match-${t}`);
-                if (btn) {
-                    btn.className = "px-4 py-2 rounded-lg text-xs sm:text-sm font-bold bg-navy-800 text-slate-300 hover:text-gold-accent transition-all";
-                }
-            });
-            document.getElementById('tab-esports-news').className = "px-4 py-2 rounded-lg text-xs sm:text-sm font-bold bg-navy-800 text-slate-300 hover:text-gold-accent transition-all";
-
-            const activeBtn = document.getElementById(`tab-match-${mode}`);
-            if (activeBtn) {
-                activeBtn.className = "px-4 py-2 rounded-lg text-xs sm:text-sm font-extrabold bg-gold-metallic text-navy-950 transition-all";
-            }
-
-            if (summonerDB[currentActiveSummoner]) {
-                renderMatches(summonerDB[currentActiveSummoner].matches);
-            }
-        }
-
-        function showEsportsNews() {
-            document.getElementById('match-list-container').classList.add('hidden');
-            document.getElementById('esports-news-container').classList.remove('hidden');
-
-            ['all', 'solo', 'flex'].forEach(t => {
-                const btn = document.getElementById(`tab-match-${t}`);
-                if (btn) {
-                    btn.className = "px-4 py-2 rounded-lg text-xs sm:text-sm font-bold bg-navy-800 text-slate-300 hover:text-gold-accent transition-all";
-                }
-            });
-            document.getElementById('tab-esports-news').className = "px-4 py-2 rounded-lg text-xs sm:text-sm font-extrabold bg-gold-metallic text-navy-950 transition-all";
-        }
-
-        function filterMainContent(type) {
-            if (type === 'tier') {
-                showToast("오른쪽 사이드바에서 라인별 1티어 챔피언 정보를 확인하세요!");
-            } else if (type === 'ranking') {
-                quickSearch("Hide on bush");
-                showToast("대한민국 솔로랭크 TOP 1위 'Hide on bush'의 전적입니다.");
-            }
-        }
-
-        function setLaneTier(lane) {
-            ['TOP', 'JGL', 'MID', 'ADC', 'SUP'].forEach(l => {
-                const btn = document.getElementById(`lane-${l}`);
-                if (btn) {
-                    btn.className = "py-1 rounded font-bold text-slate-400 hover:text-white";
-                }
-            });
-            document.getElementById(`lane-${lane}`).className = "py-1 rounded font-bold bg-gold-metallic text-navy-950 shadow";
-
-            const listContainer = document.getElementById('lane-tier-list');
-            const data = laneTiers[lane] || [];
-
-            listContainer.innerHTML = data.map(item => `
-                <div class="flex items-center justify-between bg-navy-900/80 p-2.5 rounded-lg border border-navy-700 hover:border-gold-metallic/40 transition-all">
-                    <div class="flex items-center gap-2.5">
-                        <span class="font-black text-xs ${item.rank === 1 ? 'text-gold-accent' : 'text-slate-400'} w-4 text-center">${item.rank}</span>
-                        <span class="text-lg">${item.icon}</span>
-                        <div>
-                            <p class="font-bold text-xs text-slate-100">${item.name}</p>
-                            <span class="text-[9px] px-1.5 py-0.2 rounded bg-gold-500/10 text-gold-400 border border-gold-500/30">${item.tier}</span>
-                        </div>
-                    </div>
-                    <div class="text-right text-[11px]">
-                        <p class="text-emerald-400 font-bold">승률 ${item.win}</p>
-                        <p class="text-slate-400 text-[10px]">픽률 ${item.pick}</p>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function showToast(message) {
-            const container = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            toast.className = 'bg-navy-800 text-gold-accent border border-gold-metallic/60 px-4 py-2.5 rounded-xl shadow-2xl text-xs font-bold flex items-center gap-2 transform transition-all duration-300 translate-y-2 opacity-0 pointer-events-auto';
-            toast.innerHTML = `<i class="fa-solid fa-circle-check text-gold-400"></i> <span>${message}</span>`;
-            
-            container.appendChild(toast);
-            
-            setTimeout(() => {
-                toast.classList.remove('translate-y-2', 'opacity-0');
-            }, 10);
-
-            setTimeout(() => {
-                toast.classList.add('opacity-0', 'translate-y-2');
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
-        }
-
-        function favoriteSummoner() {
-            showToast(`${summonerDB[currentActiveSummoner].name} 님이 관심 소환사로 등록되었습니다.`);
-        }
-
-        function shareProfile() {
-            showToast("소환사 프로필 링크가 클립보드에 복사되었습니다!");
-        }
-
-        function resetToHome() {
-            quickSearch("Hide on bush");
-        }
-    </script>
+  <script>
+    function handleSearch() {
+      const query = document.getElementById('searchInput').value.trim();
+      if (query === '') {
+        alert('검색할 소환사명이나 챔피언 이름을 입력해 주세요.');
+      } else {
+        alert(`'${query}' 소환사의 전적 데이터를 검색합니다.`);
+      }
+    }
+  </script>
 </body>
 </html>
