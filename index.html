@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GG.SEARCH - 전적 검색 및 e스포츠 뉴스</title>
+  <title>GG.SEARCH - 전적 검색 및 JavaScript 예시</title>
   <style>
     :root {
       --bg-dark: #0a0e17;
@@ -12,18 +12,40 @@
       --border-navy: #25375c;
       --gold-main: #d4af37;
       --gold-light: #f3e5ab;
-      --gold-glow: rgba(212, 175, 55, 0.3);
+      --gold-hover: #b89327;
+      --gold-glow: rgba(212, 175, 55, 0.25);
       --text-main: #f0f4f8;
       --text-muted: #94a3b8;
-      --win-color: #2563eb;
-      --loss-color: #dc2626;
+      --win-blue: #3b82f6;
+      --chip-bg: #1e293b;
+      --heart-active: #ef4444;
+      --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+      --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+    }
+
+    body.light-mode {
+      --bg-dark: #f1f5f9;
+      --card-navy: #ffffff;
+      --accent-navy: #e2e8f0;
+      --border-navy: #cbd5e1;
+      --gold-main: #b8860b;
+      --gold-light: #785202;
+      --gold-hover: #966c06;
+      --gold-glow: rgba(184, 134, 11, 0.15);
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --win-blue: #2563eb;
+      --chip-bg: #e2e8f0;
+      --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+      --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+      transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
     }
 
     body {
@@ -33,10 +55,9 @@
       flex-direction: column;
       align-items: center;
       min-height: 100vh;
-      padding: 20px;
+      padding: 20px 15px 60px 15px;
     }
 
-    /* 메인 레이아웃 컨테이너 */
     .container {
       width: 100%;
       max-width: 1280px;
@@ -45,264 +66,800 @@
       gap: 20px;
     }
 
-    /* 기획서 표 스타일 헤더 정보 */
+    /* 학번/이름 정보 상단 바 */
     .info-header {
       background: var(--card-navy);
       border: 2px solid var(--gold-main);
-      border-radius: 8px;
+      border-radius: 10px;
       padding: 12px 20px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-size: 0.95rem;
-    }
-    .info-header span {
-      color: var(--gold-light);
-      font-weight: bold;
-    }
-
-    /* 1. 헤더 영역 (통합 검색) */
-    .header-section {
-      background: linear-gradient(135deg, #0d1b2a 0%, #1b263b 100%);
-      border: 3px solid var(--gold-main);
-      border-radius: 12px;
-      padding: 25px;
-      text-align: center;
-      box-shadow: 0 0 15px var(--gold-glow);
-    }
-    .search-title {
-      color: var(--gold-main);
-      font-size: 1.5rem;
-      margin-bottom: 15px;
-      font-weight: 800;
-      letter-spacing: 1px;
-    }
-    .search-box {
-      display: flex;
-      justify-content: center;
-      max-width: 650px;
-      margin: 0 auto;
+      box-shadow: var(--shadow-sm);
+      flex-wrap: wrap;
       gap: 10px;
     }
+
+    .info-details {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      font-size: 0.92rem;
+      flex-wrap: wrap;
+    }
+
+    .info-details span {
+      color: var(--gold-main);
+      font-weight: 700;
+    }
+
+    .theme-toggle-btn {
+      background: var(--accent-navy);
+      border: 1px solid var(--border-navy);
+      color: var(--text-main);
+      padding: 8px 16px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .theme-toggle-btn:hover {
+      border-color: var(--gold-main);
+      color: var(--gold-main);
+    }
+
+    /* 1. 헤더 영역 & 검색창 */
+    .header-section {
+      background: linear-gradient(135deg, var(--card-navy) 0%, var(--accent-navy) 100%);
+      border: 2px solid var(--gold-main);
+      border-radius: 16px;
+      padding: 28px 20px;
+      text-align: center;
+      box-shadow: 0 0 20px var(--gold-glow);
+      position: relative;
+    }
+
+    .search-title {
+      color: var(--gold-main);
+      font-size: 1.6rem;
+      margin-bottom: 18px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .search-box-wrapper {
+      max-width: 680px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .search-box {
+      display: flex;
+      position: relative;
+      align-items: center;
+      width: 100%;
+    }
+
     .search-input {
-      flex: 1;
-      padding: 14px 20px;
-      border-radius: 8px;
+      width: 100%;
+      padding: 15px 120px 15px 20px;
+      border-radius: 10px;
       border: 2px solid var(--gold-main);
       background-color: var(--bg-dark);
       color: var(--text-main);
-      font-size: 1.05rem;
+      font-size: 1rem;
       outline: none;
     }
+
     .search-input:focus {
-      box-shadow: 0 0 10px var(--gold-main);
-    }
-    .search-btn {
-      padding: 14px 28px;
-      background: linear-gradient(135deg, #d4af37 0%, #aa7c11 100%);
-      border: none;
-      border-radius: 8px;
-      color: #000;
-      font-weight: bold;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-    .search-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px var(--gold-glow);
+      box-shadow: 0 0 12px var(--gold-glow);
     }
 
-    /* 메인 컨텐츠 영역 (본문 80% + 사이드 20%) */
+    .clear-btn {
+      position: absolute;
+      right: 110px;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1rem;
+      cursor: pointer;
+      display: none;
+      padding: 5px;
+    }
+
+    .clear-btn:hover {
+      color: var(--text-main);
+    }
+
+    .search-btn {
+      position: absolute;
+      right: 6px;
+      padding: 10px 22px;
+      background: linear-gradient(135deg, var(--gold-main) 0%, var(--gold-hover) 100%);
+      border: none;
+      border-radius: 8px;
+      color: #0a0e17;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .search-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 10px var(--gold-glow);
+    }
+
+    /* 최근 검색어 저장 칩 */
+    .recent-searches {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: center;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      min-height: 28px;
+    }
+
+    .search-chip {
+      background-color: var(--chip-bg);
+      border: 1px solid var(--border-navy);
+      color: var(--text-main);
+      padding: 4px 10px;
+      border-radius: 15px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+
+    .search-chip:hover {
+      border-color: var(--gold-main);
+    }
+
+    .chip-remove {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+    }
+
+    .chip-remove:hover {
+      color: var(--heart-active);
+    }
+
+    /* 본문 및 사이드바 반응형 레이아웃 */
     .content-wrapper {
       display: flex;
       gap: 20px;
     }
 
-    /* 3. 본문 영역 (너비 약 80%) */
     .main-content {
-      flex: 4; /* 약 80% 차지 */
+      flex: 3.8;
       display: flex;
       flex-direction: column;
       gap: 20px;
     }
 
-    /* 4. 관심 영역 (개인화 즐겨찾기 5개 아이콘) */
+    /* 4. 관심 영역 (개인화 즐겨찾기) */
     .favorite-section {
       background-color: var(--card-navy);
       border: 2px solid var(--border-navy);
-      border-radius: 12px;
+      border-radius: 14px;
       padding: 20px;
+      box-shadow: var(--shadow-sm);
     }
-    .section-title {
-      font-size: 1.1rem;
-      color: var(--gold-main);
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       margin-bottom: 15px;
+    }
+
+    .section-title {
+      font-size: 1.15rem;
+      color: var(--gold-main);
+      font-weight: 700;
       display: flex;
       align-items: center;
       gap: 8px;
     }
+
     .favorite-icons {
       display: flex;
-      justify-content: space-around;
+      justify-content: flex-start;
       align-items: center;
-      flex-wrap: wrap;
-      gap: 10px;
+      gap: 15px;
+      overflow-x: auto;
+      padding-bottom: 5px;
     }
+
     .fav-item {
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 8px;
+      min-width: 75px;
       cursor: pointer;
-      transition: transform 0.2s;
+      position: relative;
     }
-    .fav-item:hover {
-      transform: scale(1.1);
-    }
+
     .fav-circle {
-      width: 70px;
-      height: 70px;
+      width: 65px;
+      height: 65px;
       border-radius: 50%;
-      background: linear-gradient(135deg, #f5c518 0%, #d4af37 100%);
-      border: 3px solid var(--gold-light);
+      background: linear-gradient(135deg, var(--accent-navy) 0%, var(--card-navy) 100%);
+      border: 2px solid var(--gold-main);
       box-shadow: 0 0 10px var(--gold-glow);
       display: flex;
       justify-content: center;
       align-items: center;
-      font-size: 1.8rem;
-      color: #000;
-      font-weight: bold;
-    }
-    .fav-name {
-      font-size: 0.85rem;
-      color: var(--text-main);
-      font-weight: 600;
+      font-size: 1.7rem;
     }
 
-    /* 5. 중앙 하이라이트 배너 (영상/스킨/매드무비) */
+    .fav-item:hover .fav-circle {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 15px var(--gold-glow);
+    }
+
+    .fav-name {
+      font-size: 0.82rem;
+      color: var(--text-main);
+      font-weight: 600;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .fav-remove-btn {
+      position: absolute;
+      top: 0;
+      right: 2px;
+      background: var(--heart-active);
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 18px;
+      height: 18px;
+      font-size: 0.65rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* 5. 하이라이트 배너 */
     .highlight-banner {
-      background: linear-gradient(rgba(10, 14, 23, 0.4), rgba(10, 14, 23, 0.8)), url('https://picsum.photos/800/300?games') center/cover;
-      border: 2px solid var(--gold-main);
-      border-radius: 12px;
-      height: 220px;
+      background: linear-gradient(180deg, rgba(10,14,23,0.3) 0%, rgba(10,14,23,0.95) 100%), url('https://picsum.photos/900/320?game') center/cover;
+      border: 2px solid var(--border-navy);
+      border-radius: 14px;
+      height: 200px;
       display: flex;
       flex-direction: column;
       justify-content: flex-end;
-      padding: 20px;
+      padding: 22px;
       position: relative;
       overflow: hidden;
+      box-shadow: var(--shadow-sm);
     }
+
     .banner-badge {
       position: absolute;
       top: 15px;
       left: 15px;
       background-color: var(--gold-main);
       color: #000;
-      font-weight: bold;
-      font-size: 0.8rem;
+      font-weight: 800;
+      font-size: 0.75rem;
       padding: 4px 10px;
       border-radius: 4px;
-    }
-    .banner-title {
-      font-size: 1.5rem;
-      color: #fff;
-      font-weight: bold;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.8);
-    }
-    .banner-desc {
-      color: var(--gold-light);
-      font-size: 0.95rem;
-      margin-top: 5px;
+      letter-spacing: 0.5px;
     }
 
-    /* 메인 피드 (1티어 챔피언 & 게임 메타 분석) */
+    .banner-title {
+      font-size: 1.35rem;
+      color: #ffffff;
+      font-weight: 800;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+    }
+
+    .banner-desc {
+      color: var(--gold-light);
+      font-size: 0.9rem;
+      margin-top: 4px;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+    }
+
+    /* 메인 피드 & 포지션 필터 */
     .meta-feed {
       background-color: var(--card-navy);
       border: 2px solid var(--border-navy);
-      border-radius: 12px;
+      border-radius: 14px;
       padding: 20px;
+      box-shadow: var(--shadow-sm);
     }
+
+    .position-filter-bar {
+      display: flex;
+      gap: 8px;
+      margin: 15px 0 20px 0;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      background: var(--accent-navy);
+      border: 1px solid var(--border-navy);
+      color: var(--text-muted);
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.88rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .filter-btn.active, .filter-btn:hover {
+      background: var(--gold-main);
+      color: #0a0e17;
+      border-color: var(--gold-main);
+      font-weight: 700;
+    }
+
     .champion-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
       gap: 15px;
-      margin-top: 15px;
     }
+
     .champ-card {
       background-color: var(--accent-navy);
       border: 1px solid var(--border-navy);
-      border-radius: 8px;
-      padding: 12px;
+      border-radius: 10px;
+      padding: 14px;
       text-align: center;
-    }
-    .champ-badge {
-      color: var(--gold-main);
-      font-weight: bold;
-      font-size: 0.8rem;
-    }
-    .champ-name {
-      font-size: 1rem;
-      font-weight: bold;
-      margin: 5px 0;
-    }
-    .champ-stat {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-    }
-
-    /* 2. 사이드 메뉴 (너비 약 20%) */
-    .side-menu {
-      flex: 1; /* 약 20% 차지 */
-      min-width: 260px;
+      position: relative;
       display: flex;
       flex-direction: column;
-      gap: 15px;
+      align-items: center;
     }
+
+    .champ-card:hover {
+      border-color: var(--gold-main);
+      transform: translateY(-2px);
+    }
+
+    .heart-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.1rem;
+      cursor: pointer;
+    }
+
+    .heart-btn.active {
+      color: var(--heart-active);
+    }
+
+    .champ-avatar {
+      font-size: 2.2rem;
+      margin: 6px 0;
+    }
+
+    .champ-badge {
+      background-color: rgba(212, 175, 55, 0.15);
+      color: var(--gold-main);
+      font-weight: 700;
+      font-size: 0.72rem;
+      padding: 2px 8px;
+      border-radius: 4px;
+      border: 1px solid var(--gold-main);
+    }
+
+    .champ-name {
+      font-size: 0.98rem;
+      font-weight: 700;
+      margin: 6px 0 4px 0;
+    }
+
+    .champ-stats {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    /* 📌 JavaScript 실습 예시 3가지 전용 섹션 */
+    .js-demo-section {
+      background-color: var(--card-navy);
+      border: 2px solid var(--gold-main);
+      border-radius: 14px;
+      padding: 22px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .js-demo-title {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: var(--gold-main);
+      border-bottom: 2px solid var(--border-navy);
+      padding-bottom: 10px;
+    }
+
+    .js-example-box {
+      background-color: var(--accent-navy);
+      border: 1px solid var(--border-navy);
+      border-radius: 10px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .js-example-header {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    /* 1. 로그인 폼 */
+    .login-form {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-width: 280px;
+    }
+
+    .login-input {
+      padding: 8px 12px;
+      border: 1px solid var(--border-navy);
+      border-radius: 4px;
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-size: 0.9rem;
+      outline: none;
+    }
+
+    .login-input:focus {
+      border-color: var(--gold-main);
+    }
+
+    .login-btn {
+      padding: 8px;
+      background-color: var(--card-navy);
+      border: 1px solid var(--gold-main);
+      color: var(--gold-main);
+      font-weight: bold;
+      border-radius: 4px;
+      cursor: pointer;
+      width: 80px;
+    }
+
+    .login-btn:hover {
+      background-color: var(--gold-main);
+      color: #000;
+    }
+
+    /* 2. 글자 색 바꾸기 */
+    .color-change-text {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #00b4d8;
+      cursor: pointer;
+      user-select: none;
+      padding: 8px 0;
+      transition: color 0.2s ease;
+    }
+
+    /* 3. 카운터 */
+    .counter-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .counter-btn {
+      padding: 6px 14px;
+      background-color: var(--card-navy);
+      border: 1px solid var(--border-navy);
+      color: var(--text-main);
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .counter-btn:hover {
+      border-color: var(--gold-main);
+      color: var(--gold-main);
+    }
+
+    /* 2. 사이드바 영역 (탭, 타이머, 승패예측) */
+    .side-menu {
+      flex: 1.2;
+      min-width: 280px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
     .side-card {
       background-color: var(--card-navy);
       border: 2px solid var(--border-navy);
-      border-radius: 10px;
-      padding: 15px;
+      border-radius: 14px;
+      padding: 18px;
+      box-shadow: var(--shadow-sm);
     }
-    .side-title {
-      font-size: 1rem;
+
+    /* 사이드바 탭 메뉴 */
+    .tab-header {
+      display: flex;
+      border-bottom: 2px solid var(--border-navy);
+      margin-bottom: 15px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 10px 4px;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      margin-bottom: -2px;
+    }
+
+    .tab-btn.active {
       color: var(--gold-main);
-      font-weight: bold;
-      margin-bottom: 10px;
-      border-bottom: 1px solid var(--border-navy);
-      padding-bottom: 8px;
+      border-bottom-color: var(--gold-main);
     }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* LCK 카운트다운 타이머 */
+    .timer-box {
+      background: linear-gradient(135deg, var(--accent-navy) 0%, var(--bg-dark) 100%);
+      border: 1px solid var(--gold-main);
+      border-radius: 10px;
+      padding: 12px;
+      text-align: center;
+      margin-bottom: 15px;
+    }
+
+    .timer-title {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .timer-match {
+      font-weight: 700;
+      color: var(--gold-main);
+      font-size: 0.95rem;
+      margin-bottom: 6px;
+    }
+
+    .timer-clock {
+      font-family: monospace;
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: 1px;
+    }
+
+    /* LCK 승패 예측 투표 */
+    .poll-section {
+      background: var(--accent-navy);
+      border-radius: 10px;
+      padding: 12px;
+      margin-top: 10px;
+    }
+
+    .poll-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--gold-main);
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    .poll-buttons {
+      display: flex;
+      gap: 8px;
+    }
+
+    .poll-btn {
+      flex: 1;
+      padding: 8px;
+      border: 1px solid var(--border-navy);
+      background-color: var(--card-navy);
+      color: var(--text-main);
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 0.85rem;
+    }
+
+    .poll-btn:hover {
+      border-color: var(--gold-main);
+      color: var(--gold-main);
+    }
+
+    .poll-result-bar {
+      margin-top: 10px;
+      background-color: var(--bg-dark);
+      border-radius: 6px;
+      height: 12px;
+      display: flex;
+      overflow: hidden;
+    }
+
+    .poll-fill-t1 {
+      background-color: #3b82f6;
+      height: 100%;
+      width: 50%;
+      transition: width 0.5s ease;
+    }
+
+    .poll-fill-gen {
+      background-color: var(--gold-main);
+      height: 100%;
+      width: 50%;
+      transition: width 0.5s ease;
+    }
+
+    .poll-percentages {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      margin-top: 4px;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    /* 사이드 리스트 */
     .side-list {
       list-style: none;
       display: flex;
       flex-direction: column;
-      gap: 8px;
-      font-size: 0.88rem;
+      gap: 10px;
+      font-size: 0.85rem;
     }
+
     .side-list li {
       display: flex;
       justify-content: space-between;
-      color: var(--text-main);
-      cursor: pointer;
-    }
-    .side-list li:hover {
-      color: var(--gold-light);
-    }
-    .ad-banner {
-      background: linear-gradient(135deg, #1f293d, #111827);
-      border: 1px dashed var(--gold-main);
-      height: 140px;
-      border-radius: 8px;
-      display: flex;
-      justify-content: center;
       align-items: center;
-      color: var(--text-muted);
-      font-size: 0.85rem;
-      text-align: center;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border-navy);
     }
 
-    /* 반응형 레이아웃 */
+    /* 로딩 스피너 오버레이 */
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(10, 14, 23, 0.75);
+      backdrop-filter: blur(4px);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      z-index: 9999;
+    }
+
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 5px solid var(--border-navy);
+      border-top: 5px solid var(--gold-main);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .loading-text {
+      margin-top: 15px;
+      color: var(--gold-main);
+      font-weight: 700;
+      font-size: 1.05rem;
+    }
+
+    /* TOP 플로팅 버튼 */
+    .top-btn {
+      position: fixed;
+      bottom: 25px;
+      right: 25px;
+      width: 48px;
+      height: 48px;
+      background: var(--gold-main);
+      color: #0a0e17;
+      border: none;
+      border-radius: 50%;
+      box-shadow: 0 4px 15px var(--gold-glow);
+      font-size: 1.2rem;
+      cursor: pointer;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 100;
+    }
+
+    .top-btn:hover {
+      transform: translateY(-3px);
+      background: var(--gold-light);
+    }
+
+    /* 토스트 알림 메시지 */
+    .toast-container {
+      position: fixed;
+      bottom: 25px;
+      left: 25px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 9999;
+    }
+
+    .toast {
+      background: var(--card-navy);
+      color: var(--text-main);
+      border-left: 4px solid var(--gold-main);
+      padding: 12px 18px;
+      border-radius: 6px;
+      box-shadow: var(--shadow-lg);
+      font-size: 0.9rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      animation: slideIn 0.3s ease, fadeOut 0.3s ease 2.7s forwards;
+    }
+
+    @keyframes slideIn {
+      from { transform: translateX(-100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    @keyframes fadeOut {
+      from { opacity: 1; }
+      to { opacity: 0; }
+    }
+
+    /* 모바일 반응형 */
     @media (max-width: 900px) {
       .content-wrapper {
         flex-direction: column;
@@ -315,144 +872,187 @@
 </head>
 <body>
 
+  <!-- 로딩 스피너 오버레이 -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="spinner"></div>
+    <div class="loading-text">전적 및 매치 데이터를 분석하는 중...</div>
+  </div>
+
+  <!-- 토스트 알림 컨테이너 -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- 맨 위로 가기 버튼 -->
+  <button class="top-btn" id="topBtn" onclick="scrollToTop()">▲</button>
+
   <div class="container">
-    <!-- 기획서 상단 정보 바 -->
+    
+    <!-- 학번/이름 및 디자인 목표 상단바 -->
     <div class="info-header">
-      <div><span>학번:</span> 20608 | <span>이름:</span> 김민혁</div>
-      <div><span>주제:</span> 전적 검색 및 e스포츠 뉴스 공유</div>
-      <div><span>디자인:</span> 남색 & 황금색 세련된 테마</div>
+      <div class="info-details">
+        <div><span>학번:</span> 20608</div>
+        <div><span>이름:</span> 김민혁</div>
+        <div><span>주제:</span> 전적 검색 및 e스포츠 뉴스 공유</div>
+      </div>
+      <button class="theme-toggle-btn" onclick="toggleTheme()">
+        <span id="themeIcon">☀️</span> <span id="themeText">라이트 모드</span>
+      </button>
     </div>
 
-    <!-- 1. 헤더 영역 (통합 전적 사이트 검색) -->
+    <!-- 1. 헤더 영역 (통합 전적 검색) -->
     <header class="header-section">
       <div class="search-title">⚔️ GG.SEARCH 통합 전적 검색</div>
-      <div class="search-box">
-        <input type="text" class="search-input" id="searchInput" placeholder="소환사명 또는 챔피언 이름을 입력하세요 (예: Hide on bush)">
-        <button class="search-btn" onclick="handleSearch()">검색하기</button>
+      <div class="search-box-wrapper">
+        <div class="search-box">
+          <input type="text" class="search-input" id="searchInput" placeholder="소환사명 또는 챔피언 이름 (예: Hide on bush)" onkeyup="handleKeyUp(event)" oninput="toggleClearBtn()">
+          <button class="clear-btn" id="clearBtn" onclick="clearSearchInput()">✕</button>
+          <button class="search-btn" onclick="executeSearch()">🔍 검색하기</button>
+        </div>
+        <!-- 최근 검색어 저장 영역 (LocalStorage) -->
+        <div class="recent-searches" id="recentSearches">
+          <span>최근 검색:</span>
+          <!-- 스크립트로 태그 삽입됨 -->
+        </div>
       </div>
     </header>
 
-    <!-- 본문 컨텐츠 레이아웃 (본문 80% + 사이드 20%) -->
+    <!-- 메인 레이아웃 (본문 80% + 사이드 20%) -->
     <div class="content-wrapper">
       
-      <!-- 3. 본문 영역 (화면 너비 약 80%) -->
+      <!-- 3. 본문 영역 -->
       <main class="main-content">
         
-        <!-- 4. 관심 영역 (모스트 챔피언 5종 / 프로게이머 개인화 영역) -->
+        <!-- 4. 관심 영역 (모스트 챔피언/프로게이머) -->
         <section class="favorite-section">
-          <div class="section-title">⭐ 관심 영역 (즐겨찾기 모스트 챔피언 & 소환사)</div>
-          <div class="favorite-icons">
-            <div class="fav-item" onclick="alert('페이커(Faker) 전적 페이지로 이동합니다.')">
-              <div class="fav-circle">👑</div>
-              <div class="fav-name">Faker</div>
-            </div>
-            <div class="fav-item" onclick="alert('아리 챔피언 분석 페이지로 이동합니다.')">
-              <div class="fav-circle">🦊</div>
-              <div class="fav-name">아리</div>
-            </div>
-            <div class="fav-item" onclick="alert('리신 챔피언 분석 페이지로 이동합니다.')">
-              <div class="fav-circle">🥊</div>
-              <div class="fav-name">리 신</div>
-            </div>
-            <div class="fav-item" onclick="alert('Chovy 전적 페이지로 이동합니다.')">
-              <div class="fav-circle">⚡</div>
-              <div class="fav-name">Chovy</div>
-            </div>
-            <div class="fav-item" onclick="alert('제우스 전적 페이지로 이동합니다.')">
-              <div class="fav-circle">🛡️</div>
-              <div class="fav-name">Zeus</div>
-            </div>
+          <div class="section-header">
+            <div class="section-title">⭐ 관심 영역 (즐겨찾기 5종)</div>
+          </div>
+          <div class="favorite-icons" id="favoriteIcons">
+            <!-- 자바스크립트로 동적 렌더링됨 -->
           </div>
         </section>
 
-        <!-- 5. 신규 패치 하이라이트 영상 / 스킨 / 매드무비 중앙 배치 -->
+        <!-- 5. 하이라이트 영상/스킨 중앙 배치 -->
         <section class="highlight-banner">
           <span class="banner-badge">NEW PATCH HIGHLIGHT</span>
           <div class="banner-title">🎬 14.20 패치 하이라이트 & 신규 전설급 스킨 공개</div>
           <div class="banner-desc">금주의 명장면 매드무비 및 챔피언 밸런스 패치 핵심 요약 영상을 확인하세요.</div>
         </section>
 
-        <!-- 본문 메인 피드 (1티어 챔피언 및 실시간 메타 분석) -->
+        <!-- 📌 [추가됨] JavaScript 실습 예시 3가지 섹션 -->
+        <section class="js-demo-section">
+          <div class="js-demo-title">📜 JavaScript 실습 예시</div>
+
+          <!-- 예시 1. 로그인 -->
+          <div class="js-example-box">
+            <div class="js-example-header">1. 로그인</div>
+            <div class="login-form">
+              <input type="text" id="loginId" class="login-input" placeholder="아이디">
+              <input type="password" id="loginPw" class="login-input" placeholder="비밀번호">
+              <button class="login-btn" onclick="handleDemoLogin()">로그인</button>
+            </div>
+          </div>
+
+          <!-- 예시 2. 글자 색 바꾸기 -->
+          <div class="js-example-box">
+            <div class="js-example-header">2. 글자 색 바꾸기</div>
+            <div class="color-change-text" id="colorText" onclick="changeTextColor()">
+              안녕하세요 만나서 반갑습니다. 클릭하시면 색이 바뀝니다.
+            </div>
+          </div>
+
+          <!-- 예시 3. 카운터 -->
+          <div class="js-example-box">
+            <div class="js-example-header">3. 카운터</div>
+            <div class="counter-wrapper">
+              <button class="counter-btn" onclick="incrementCounter()">counter</button>
+              <span id="counterText" style="font-weight: bold; font-size: 0.95rem;">0번 클릭</span>
+              <button class="counter-btn" style="font-size:0.75rem; padding:4px 8px;" onclick="resetCounter()">초기화</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- 메인 피드 (포지션 필터 & 1티어 챔피언) -->
         <section class="meta-feed">
           <div class="section-title">📊 실시간 게임 메타 분석 & 1티어 챔피언</div>
-          <p style="color: var(--text-muted); font-size: 0.9rem;">현재 솔로랭크 승률 및 픽률 기준 최상위 챔피언 정보입니다.</p>
           
-          <div class="champion-grid">
-            <div class="champ-card">
-              <div class="champ-badge">OP 1티어</div>
-              <div class="champ-name">아리</div>
-              <div class="champ-stat">승률 52.4%</div>
-            </div>
-            <div class="champ-card">
-              <div class="champ-badge">OP 1티어</div>
-              <div class="champ-name">카이사</div>
-              <div class="champ-stat">승률 51.8%</div>
-            </div>
-            <div class="champ-card">
-              <div class="champ-badge">1티어</div>
-              <div class="champ-name">자르반 4세</div>
-              <div class="champ-stat">승률 52.1%</div>
-            </div>
-            <div class="champ-card">
-              <div class="champ-badge">1티어</div>
-              <div class="champ-name">쓰레쉬</div>
-              <div class="champ-stat">승률 51.2%</div>
-            </div>
-            <div class="champ-card">
-              <div class="champ-badge">1티어</div>
-              <div class="champ-name">아트록스</div>
-              <div class="champ-stat">승률 50.9%</div>
-            </div>
+          <!-- 포지션 필터 버튼 -->
+          <div class="position-filter-bar">
+            <button class="filter-btn active" onclick="filterPosition('ALL', this)">🌐 전체</button>
+            <button class="filter-btn" onclick="filterPosition('TOP', this)">⚔️ 탑</button>
+            <button class="filter-btn" onclick="filterPosition('JGL', this)">🌲 정글</button>
+            <button class="filter-btn" onclick="filterPosition('MID', this)">🧙‍♂️ 미드</button>
+            <button class="filter-btn" onclick="filterPosition('ADC', this)">🏹 원딜</button>
+            <button class="filter-btn" onclick="filterPosition('SUP', this)">🛡️ 서폿</button>
+          </div>
+
+          <!-- 챔피언 그리드 -->
+          <div class="champion-grid" id="championGrid">
+            <!-- JS 동적 생성 -->
           </div>
         </section>
 
       </main>
 
-      <!-- 2. 사이드 메뉴 (너비 약 20%) -->
+      <!-- 2. 사이드 메뉴 -->
       <aside class="side-menu">
         
-        <!-- 챔피언 티어 분석 -->
         <div class="side-card">
-          <div class="side-title">🏆 라인별 티어 분석</div>
-          <ul class="side-list">
-            <li><span>TOP</span><span style="color:var(--gold-main)">아트록스, 람머스</span></li>
-            <li><span>JGL</span><span style="color:var(--gold-main)">자르반 4세, 리신</span></li>
-            <li><span>MID</span><span style="color:var(--gold-main)">아리, 오리아나</span></li>
-            <li><span>ADC</span><span style="color:var(--gold-main)">카이사, 이즈리얼</span></li>
-            <li><span>SUP</span><span style="color:var(--gold-main)">쓰레쉬, 노틸러스</span></li>
-          </ul>
-        </div>
+          <!-- 탭 헤더 -->
+          <div class="tab-header">
+            <button class="tab-btn active" onclick="switchTab('tab-schedule', this)">📅 경기 일정</button>
+            <button class="tab-btn" onclick="switchTab('tab-patch', this)">📜 패치 노트</button>
+            <button class="tab-btn" onclick="switchTab('tab-community', this)">🔥 인기글</button>
+          </div>
 
-        <!-- e스포츠 경기 일정 -->
-        <div class="side-card">
-          <div class="side-title">📅 e스포츠 경기 일정</div>
-          <ul class="side-list">
-            <li><span>17:00</span><span>T1 vs GEN.G</span></li>
-            <li><span>20:00</span><span>DK vs KT</span></li>
-          </ul>
-        </div>
+          <!-- 탭 1: 경기 일정 & 타이머 & 승패예측 -->
+          <div class="tab-content active" id="tab-schedule">
+            <div class="timer-box">
+              <div class="timer-title">NEXT MATCH COUNTDOWN</div>
+              <div class="timer-match">T1 vs GEN.G</div>
+              <div class="timer-clock" id="countdownClock">02 : 15 : 30</div>
+            </div>
 
-        <!-- 최신 패치 노트 -->
-        <div class="side-card">
-          <div class="side-title">📜 최신 패치 노트</div>
-          <ul class="side-list">
-            <li>14.20 패치 챔피언 버프/너프</li>
-            <li>신규 스킨 라인업 안내</li>
-          </ul>
-        </div>
+            <ul class="side-list">
+              <li><span>17:00 (LCK)</span> <strong style="color:var(--gold-main)">T1 vs GEN.G</strong></li>
+              <li><span>20:00 (LCK)</span> <span>DK vs KT</span></li>
+            </ul>
 
-        <!-- 커뮤니티 인기글 -->
-        <div class="side-card">
-          <div class="side-title">🔥 커뮤니티 인기글</div>
-          <ul class="side-list">
-            <li>솔랭 티어 올려주는 꿀팁 5가지</li>
-            <li>이번 패치 최대 수혜 챔피언은?</li>
-          </ul>
-        </div>
+            <!-- 승패 예측 투표 -->
+            <div class="poll-section">
+              <div class="poll-title">🗳️ 오늘의 승리 팀 예측</div>
+              <div class="poll-buttons">
+                <button class="poll-btn" id="btnVoteT1" onclick="vote('T1')">T1</button>
+                <button class="poll-btn" id="btnVoteGen" onclick="vote('GEN')">GEN.G</button>
+              </div>
+              <div class="poll-result-bar">
+                <div class="poll-fill-t1" id="fillT1"></div>
+                <div class="poll-fill-gen" id="fillGen"></div>
+              </div>
+              <div class="poll-percentages">
+                <span id="textPercentT1">T1 50%</span>
+                <span id="textPercentGen">GEN.G 50%</span>
+              </div>
+            </div>
+          </div>
 
-        <!-- 각종 광고 배너 -->
-        <div class="ad-banner">
-          📢 광고 배너 영역<br>(광고 문의: contact@gg.search)
+          <!-- 탭 2: 패치 노트 -->
+          <div class="tab-content" id="tab-patch">
+            <ul class="side-list">
+              <li><span>14.20 패치</span> <span>챔피언 밸런스 조정</span></li>
+              <li><span>신규 스킨</span> <span>용의 유산 라인업</span></li>
+              <li><span>아이템</span> <span>지평선의 메아리 버프</span></li>
+            </ul>
+          </div>
+
+          <!-- 탭 3: 커뮤니티 인기글 -->
+          <div class="tab-content" id="tab-community">
+            <ul class="side-list">
+              <li><span>솔랭 티어 올리는 팁 5가지</span></li>
+              <li><span>이번 패치 최대 수혜 챔피언</span></li>
+              <li><span>프로게이머 단편 영화 리뷰</span></li>
+            </ul>
+          </div>
+
         </div>
 
       </aside>
@@ -461,13 +1061,269 @@
   </div>
 
   <script>
-    function handleSearch() {
-      const query = document.getElementById('searchInput').value.trim();
-      if (query === '') {
-        alert('검색할 소환사명이나 챔피언 이름을 입력해 주세요.');
-      } else {
-        alert(`'${query}' 소환사의 전적 데이터를 검색합니다.`);
+    // --- 1. 데이터 세팅 ---
+    const champions = [
+      { id: 'ahri', name: '아리', pos: 'MID', icon: '🦊', tier: 'OP 1티어', winRate: '52.4%', pickRate: '14.2%' },
+      { id: 'kaisa', name: '카이사', pos: 'ADC', icon: '🎯', tier: 'OP 1티어', winRate: '51.8%', pickRate: '22.5%' },
+      { id: 'j4', name: '자르반 4세', pos: 'JGL', icon: '👑', tier: '1티어', winRate: '52.1%', pickRate: '9.8%' },
+      { id: 'thresh', name: '쓰레쉬', pos: 'SUP', icon: '⚓', tier: '1티어', winRate: '51.2%', pickRate: '12.1%' },
+      { id: 'aatrox', name: '아트록스', pos: 'TOP', icon: '⚔️', tier: '1티어', winRate: '50.9%', pickRate: '11.4%' },
+      { id: 'leesin', name: '리 신', pos: 'JGL', icon: '🥊', tier: '2티어', winRate: '49.8%', pickRate: '18.3%' }
+    ];
+
+    let favoriteChamps = ['ahri', 'kaisa', 'j4', 'thresh', 'aatrox'];
+    let recentSearchList = JSON.parse(localStorage.getItem('gg_searches')) || ['Hide on bush', 'Faker', 'Chovy'];
+    let voteCounts = { T1: 62, GEN: 38 };
+    let clickCount = 0; // JS 예시 3. 카운터 변수
+
+    // --- 2. 초기화 실행 ---
+    document.addEventListener('DOMContentLoaded', () => {
+      renderRecentSearches();
+      renderFavorites();
+      renderChampions('ALL');
+      startCountdownTimer();
+      updatePollUI();
+
+      window.addEventListener('scroll', () => {
+        const topBtn = document.getElementById('topBtn');
+        if (window.scrollY > 300) topBtn.style.display = 'flex';
+        else topBtn.style.display = 'none';
+      });
+    });
+
+    // --- 3. JavaScript 예시 기능 3가지 ---
+    
+    // 예시 1: 로그인
+    function handleDemoLogin() {
+      const id = document.getElementById('loginId').value.trim();
+      const pw = document.getElementById('loginPw').value.trim();
+
+      if (!id || !pw) {
+        showToast('⚠️ 아이디와 비밀번호를 입력해주세요.');
+        return;
       }
+      showToast(`🔑 [${id}]님 환영합니다! 로그인되었습니다.`);
+    }
+
+    // 예시 2: 글자 색 바꾸기
+    const textColors = ['#00b4d8', '#d4af37', '#e63946', '#9d4edd', '#2a9d8f', '#f4a261'];
+    let colorIndex = 0;
+
+    function changeTextColor() {
+      colorIndex = (colorIndex + 1) % textColors.length;
+      const textElem = document.getElementById('colorText');
+      textElem.style.color = textColors[colorIndex];
+      showToast(`🎨 글자 색이 변경되었습니다. (${textColors[colorIndex]})`);
+    }
+
+    // 예시 3: 카운터
+    function incrementCounter() {
+      clickCount++;
+      document.getElementById('counterText').innerText = `${clickCount}번 클릭`;
+    }
+
+    function resetCounter() {
+      clickCount = 0;
+      document.getElementById('counterText').innerText = `0번 클릭`;
+      showToast('🔄 카운터가 초기화되었습니다.');
+    }
+
+    // --- 4. 검색 및 로딩 스피너 ---
+    function handleKeyUp(e) {
+      if (e.key === 'Enter') executeSearch();
+    }
+
+    function toggleClearBtn() {
+      const val = document.getElementById('searchInput').value;
+      document.getElementById('clearBtn').style.display = val ? 'block' : 'none';
+    }
+
+    function clearSearchInput() {
+      document.getElementById('searchInput').value = '';
+      toggleClearBtn();
+    }
+
+    function executeSearch() {
+      const query = document.getElementById('searchInput').value.trim();
+      if (!query) {
+        showToast('⚠️ 검색할 소환사명이나 챔피언을 입력하세요.');
+        return;
+      }
+
+      showLoading(true);
+      setTimeout(() => {
+        showLoading(false);
+        addRecentSearch(query);
+        showToast(`🔍 '${query}' 소환사의 전적 분석이 완료되었습니다.`);
+      }, 800);
+    }
+
+    // --- 5. 최근 검색어 Storage ---
+    function addRecentSearch(term) {
+      recentSearchList = recentSearchList.filter(item => item !== term);
+      recentSearchList.unshift(term);
+      if (recentSearchList.length > 5) recentSearchList.pop();
+      localStorage.setItem('gg_searches', JSON.stringify(recentSearchList));
+      renderRecentSearches();
+    }
+
+    function removeRecentSearch(term, e) {
+      e.stopPropagation();
+      recentSearchList = recentSearchList.filter(item => item !== term);
+      localStorage.setItem('gg_searches', JSON.stringify(recentSearchList));
+      renderRecentSearches();
+    }
+
+    function renderRecentSearches() {
+      const container = document.getElementById('recentSearches');
+      container.innerHTML = '<span>최근 검색:</span>';
+      recentSearchList.forEach(term => {
+        const chip = document.createElement('div');
+        chip.className = 'search-chip';
+        chip.innerHTML = `${term} <span class="chip-remove" onclick="removeRecentSearch('${term}', event)">✕</span>`;
+        chip.onclick = () => {
+          document.getElementById('searchInput').value = term;
+          toggleClearBtn();
+          executeSearch();
+        };
+        container.appendChild(chip);
+      });
+    }
+
+    // --- 6. 관심 영역 동적 렌더링 ---
+    function renderFavorites() {
+      const container = document.getElementById('favoriteIcons');
+      container.innerHTML = '';
+      favoriteChamps.forEach(id => {
+        const champ = champions.find(c => c.id === id);
+        if (champ) {
+          const item = document.createElement('div');
+          item.className = 'fav-item';
+          item.innerHTML = `
+            <button class="fav-remove-btn" onclick="toggleFavorite('${champ.id}', event)">✕</button>
+            <div class="fav-circle">${champ.icon}</div>
+            <div class="fav-name">${champ.name}</div>
+          `;
+          item.onclick = () => showToast(`${champ.name} 상세 페이지로 이동합니다.`);
+          container.appendChild(item);
+        }
+      });
+    }
+
+    function toggleFavorite(id, e) {
+      if (e) e.stopPropagation();
+      if (favoriteChamps.includes(id)) {
+        favoriteChamps = favoriteChamps.filter(item => item !== id);
+        showToast('관심 챔피언에서 해제되었습니다.');
+      } else {
+        if (favoriteChamps.length >= 5) {
+          showToast('⚠️ 관심 영역은 최대 5개까지 등록 가능합니다.');
+          return;
+        }
+        favoriteChamps.push(id);
+        showToast('⭐ 관심 챔피언으로 등록되었습니다.');
+      }
+      renderFavorites();
+      renderChampions(currentPositionFilter);
+    }
+
+    // --- 7. 포지션 필터 & 챔피언 카드 ---
+    let currentPositionFilter = 'ALL';
+
+    function filterPosition(pos, btnElem) {
+      currentPositionFilter = pos;
+      document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+      btnElem.classList.add('active');
+      renderChampions(pos);
+    }
+
+    function renderChampions(pos) {
+      const grid = document.getElementById('championGrid');
+      grid.innerHTML = '';
+      const filtered = pos === 'ALL' ? champions : champions.filter(c => c.pos === pos);
+
+      filtered.forEach(champ => {
+        const isFav = favoriteChamps.includes(champ.id);
+        const card = document.createElement('div');
+        card.className = 'champ-card';
+        card.innerHTML = `
+          <button class="heart-btn ${isFav ? 'active' : ''}" onclick="toggleFavorite('${champ.id}', event)">
+            ${isFav ? '❤️' : '🤍'}
+          </button>
+          <div class="champ-avatar">${champ.icon}</div>
+          <div class="champ-badge">${champ.tier}</div>
+          <div class="champ-name">${champ.name}</div>
+          <div class="champ-stats">
+            <span>승률 ${champ.winRate}</span>
+            <span>픽률 ${champ.pickRate}</span>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    // --- 8. 사이드바 탭 / 카운트다운 / 승패예측 ---
+    function switchTab(tabId, btnElem) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+      btnElem.classList.add('active');
+      document.getElementById(tabId).classList.add('active');
+    }
+
+    function startCountdownTimer() {
+      let seconds = 8130;
+      setInterval(() => {
+        seconds--;
+        if (seconds < 0) seconds = 8130;
+        const h = String(Math.floor(seconds / 3600)).padStart(2, '0');
+        const m = String(Math.floor((seconds % 3600) / 60)).padStart(2, '0');
+        const s = String(seconds % 60).padStart(2, '0');
+        document.getElementById('countdownClock').innerText = `${h} : ${m} : ${s}`;
+      }, 1000);
+    }
+
+    function vote(team) {
+      voteCounts[team]++;
+      updatePollUI();
+      document.getElementById('btnVoteT1').classList.toggle('voted', team === 'T1');
+      document.getElementById('btnVoteGen').classList.toggle('voted', team === 'GEN');
+      showToast(`🗳️ ${team === 'T1' ? 'T1' : 'GEN.G'}팀에 투표하셨습니다.`);
+    }
+
+    function updatePollUI() {
+      const total = voteCounts.T1 + voteCounts.GEN;
+      const t1Pct = Math.round((voteCounts.T1 / total) * 100);
+      const genPct = 100 - t1Pct;
+
+      document.getElementById('fillT1').style.width = `${t1Pct}%`;
+      document.getElementById('fillGen').style.width = `${genPct}%`;
+      document.getElementById('textPercentT1').innerText = `T1 ${t1Pct}%`;
+      document.getElementById('textPercentGen').innerText = `GEN.G ${genPct}%`;
+    }
+
+    // --- 9. 기타 유틸 (다크모드, 토스트, 스크롤) ---
+    function toggleTheme() {
+      document.body.classList.toggle('light-mode');
+      const isLight = document.body.classList.contains('light-mode');
+      document.getElementById('themeIcon').innerText = isLight ? '🌙' : '☀️';
+      document.getElementById('themeText').innerText = isLight ? '다크 모드' : '라이트 모드';
+    }
+
+    function showLoading(show) {
+      document.getElementById('loadingOverlay').style.display = show ? 'flex' : 'none';
+    }
+
+    function scrollToTop() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function showToast(msg) {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.innerHTML = `<span>📢</span> <span>${msg}</span>`;
+      container.appendChild(toast);
+      setTimeout(() => toast.remove(), 3000);
     }
   </script>
 </body>
